@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Future state journey: variable-income debtor (DE pilot)</title>
+<style>
+  :root {
+    --ink: #1f2a33;
+    --muted: #5b6770;
+    --paper: #fbfaf7;
+    --line: #d9d6cc;
+    --stage: #0f5f63;
+    --stage-bg: #e3f0ef;
+    --pain: #9a3b22;
+    --pain-bg: #f8e7e0;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0 auto; max-width: 1100px; padding: 32px 28px 40px;
+    color: var(--ink); background: var(--paper);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  h1, h2 { font-family: "Iowan Old Style", Georgia, "Times New Roman", serif; font-weight: 600; margin: 0; }
+  h1 { font-size: 28px; line-height: 1.2; }
+  h2 { font-size: 20px; margin: 32px 0 12px; }
+  .sub { color: var(--muted); margin: 6px 0 20px; max-width: 78ch; }
+  .persona { border-left: 3px solid var(--stage); padding: 4px 0 4px 14px; margin: 0 0 24px; color: var(--ink); max-width: 90ch; }
+  .persona p { margin: 2px 0; }
+
+  .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
+  .stage { display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .stage:not(:last-child)::after {
+    content: ""; position: absolute; top: 22px; right: -16px; width: 12px; height: 12px;
+    border-top: 2px solid var(--stage); border-right: 2px solid var(--stage); transform: rotate(45deg);
+  }
+  .head {
+    background: var(--stage); color: #fff; border-radius: 8px; padding: 12px 14px;
+    font-family: "Iowan Old Style", Georgia, serif; font-size: 17px; font-weight: 600;
+  }
+  .cell { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; flex: 1; }
+  .cell b { display: block; font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+  .cell.pain { background: var(--pain-bg); border-color: #e8c8bb; }
+  .cell.pain b { color: var(--pain); }
+  .cell p { margin: 0; }
+
+  ol.stages { padding-left: 22px; margin: 0; }
+  ol.stages > li { margin-bottom: 18px; padding-left: 4px; }
+  ol.stages > li > strong { font-family: "Iowan Old Style", Georgia, serif; font-size: 17px; }
+  ul { margin: 6px 0 0; padding-left: 18px; }
+  li li, ul li { margin: 3px 0; }
+  .lbl { font-weight: 600; }
+
+  .adv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .adv div { background: var(--stage-bg); border-radius: 8px; padding: 12px 14px; }
+  .adv strong { display: block; margin-bottom: 4px; color: var(--stage); }
+
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin-top: 12px; }
+  .note p { margin: 4px 0; }
+  .src { color: var(--muted); font-size: 13px; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 12px; }
+
+  @media (max-width: 820px) {
+    .timeline { grid-template-columns: 1fr; }
+    .stage:not(:last-child)::after { display: none; }
+    .adv { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { padding: 12px; font-size: 12px; }
+    h2 { margin-top: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Future state journey: debtor with variable income</h1>
+<p class="sub">Pilot in DE, one segment. A transparent digital instalment plan that consumers can keep, with the Self-Service Rate (SSR) safeguarded by quality metrics (missed payments, agent contacts).</p>
+
+<div class="persona">
+  <p><span class="lbl">Persona:</span> A debtor with variable income and multiple claims who is looking for a quick answer.</p>
+  <p><span class="lbl">Goal:</span> Find out whether and how they can pay in instalments without committing long-term to something they can't sustain.</p>
+  <p><span class="lbl">Value proposition:</span> A transparent, guided repayment journey that helps consumers choose sustainable instalment plans the first time, reducing unnecessary agent interactions and improving long-term recovery beyond SSR.</p>
+</div>
+
+<h2>Timeline</h2>
+<div class="timeline" role="list">
+  <div class="stage" role="listitem">
+    <div class="head">1. Get answer</div>
+    <div class="cell"><b>User action</b><p>Sees instalment yes/no and both claims</p></div>
+    <div class="cell"><b>Internal state</b><p>Claims grouped, eligibility set</p></div>
+    <div class="cell pain"><b>Pain point addressed</b><p>Wall of numbers; claim overlap</p></div>
+  </div>
+  <div class="stage" role="listitem">
+    <div class="head">2. Show range</div>
+    <div class="cell"><b>User action</b><p>Enters best and worst month</p></div>
+    <div class="cell"><b>Internal state</b><p>No preset anchor; range stored</p></div>
+    <div class="cell pain"><b>Pain point addressed</b><p>Slider anchoring; no variable pay input</p></div>
+  </div>
+  <div class="stage" role="listitem">
+    <div class="head">3. Know rules</div>
+    <div class="cell"><b>User action</b><p>Sees missed-payment consequences</p></div>
+    <div class="cell"><b>Internal state</b><p>Plan tested against worst month</p></div>
+    <div class="cell pain"><b>Pain point addressed</b><p>Acceleration fear; unclear data use</p></div>
+  </div>
+  <div class="stage" role="listitem">
+    <div class="head">4. Stay on plan</div>
+    <div class="cell"><b>User action</b><p>Picks a start date near payday</p></div>
+    <div class="cell"><b>Internal state</b><p>Inputs and rationale visible to agents</p></div>
+    <div class="cell pain"><b>Pain point addressed</b><p>Empty agent cases; silent over-commitment</p></div>
+  </div>
+</div>
+
+<h2>The four stages (Action → Benefit)</h2>
+<ol class="stages">
+  <li><strong>Get answer</strong>
+    <ul>
+      <li><span class="lbl">User action:</span> Opens link, sees instalment yes/no first → the ten-minute question is answered instantly.</li>
+      <li><span class="lbl">Internal state:</span> Groups both claims and shows how they relate → no confusion about paying one claim.</li>
+      <li><span class="lbl">Pain point addressed:</span> Leads with the answer, not case data → removes the wall-of-numbers moment (P1, P2).</li>
+    </ul>
+  </li>
+  <li><strong>Show range</strong>
+    <ul>
+      <li><span class="lbl">User action:</span> Enters best and worst month income → expresses the truth without picking one false number.</li>
+      <li><span class="lbl">Internal state:</span> Calculates the plan within the stated range, no preset value → removes anchoring on 150 euros.</li>
+      <li><span class="lbl">Pain point addressed:</span> Slider default and missing variable-income input → addresses P3 and P4 (High).</li>
+    </ul>
+  </li>
+  <li><strong>Know rules</strong>
+    <ul>
+      <li><span class="lbl">User action:</span> Sees what a missed payment triggers → fear of total acceleration drops before committing.</li>
+      <li><span class="lbl">Internal state:</span> Stress-tests plan against worst month, explains income use → lowers under-reporting.</li>
+      <li><span class="lbl">Pain point addressed:</span> Acceleration fear and unexplained income request → addresses P7 (Critical), P5, P8.</li>
+    </ul>
+  </li>
+  <li><strong>Stay on plan</strong>
+    <ul>
+      <li><span class="lbl">User action:</span> Confirms plan, picks start date near payday → no exit over timing (P9).</li>
+      <li><span class="lbl">Internal state:</span> Logs inputs, offer shown and rationale for agents → no repeated data collection.</li>
+      <li><span class="lbl">Pain point addressed:</span> Empty agent cases and silent over-commitment → closes the agent-handoff Critical and theme 7.</li>
+    </ul>
+  </li>
+</ol>
+<div class="note"><p><span class="lbl">Pilot guardrail:</span> Track 60-day missed payments and agent contacts next to SSR, so a rising SSR cannot hide failing plans.</p></div>
+
+<h2>Competitive advantages over the manual workaround</h2>
+<div class="adv">
+  <div><strong>1. In-journey reassurance</strong>Replaces the reassurance call (P10) → fewer agent contacts, no waiting time.</div>
+  <div><strong>2. Range-based input</strong>Removes the reason to under-report (P8) → plans rest on true income.</div>
+  <div><strong>3. Logged inputs and rationale</strong>Agents continue instead of restarting → plans survive past sign-up.</div>
+</div>
+
+<h2>Risks and open points</h2>
+<div class="note">
+  <p><span class="lbl">SSR may dip in the pilot.</span> Showing consequences and a worst-month range will lose some sign-ups that succeed today through silent over-commitment. Stakeholders need to hear this before the numbers come in.</p>
+  <p><span class="lbl">Stage 3 needs Legal.</span> The copy on what a missed payment triggers must match actual contract and acceleration terms. If the real answer is full acceleration, transparency may raise abandonment. That is a policy question, not a design one.</p>
+  <p><span class="lbl">Stage 2 logic is an assumption.</span> How plan size is derived from a best/worst range is not in the research and must be defined with the business side.</p>
+</div>
+
+<p class="src">Source: Product Health &amp; Insights Summary. Inputs are synthetic quotes (10 consumer, 8 agent) with no telemetry; severities are analytical judgments, not measured impact. Quote references (P1–P10) point to those synthetic quotes. Off-portal worst-month calculations (banking app, spreadsheet) are a hypothesis, not evidenced.</p>
+
+</body>
+</html>
