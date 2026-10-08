@@ -1,17 +1,41 @@
-# Hypothesis & Success Metrics
+# Hypothesis & Success Metrics (Module 3)
 
-> **Module 3 · ★ Deliverable 3.** Repo file `03-analytics/hypothesis-and-metrics.md` — part of your submission.
-> Do the lab in the **Module 3 · Exercise Guide** (linked from the Module 3 deck), then click **⬇ Download .md** — it saves as this exact file. Commit it here.
-> It feeds the **Problem, Value & Hypothesis** slide of your Module 6 final deck.
+## Pre-work · Hypothesis check
+- **Role , who you are solving for (from M2):** A debtor with variable income and multiple claims who is looking for a quick answer.
+- **Goal , what this user is ultimately trying to achieve:** Find out whether and how they can pay in installments without committing long-term to something they can't sustain.
+- **Friction / moment of misery , the specific pain blocking their goal:** The slider shows a preset amount, which they read as the recommended norm. At the same time, there's no way to express "best month vs. worst month," and it's unclear what happens if they miss a payment (fear of full acceleration). Result: they either abandon, call the contact centre, or silently commit to an amount that's too high.
+- **Current workaround , the external tool or manual process they rely on (M2):** 1. Arrive with one question ("can I pay in pieces?") and scan dense case information for the answer.
+2.Hit the slider and read the preset value as the recommended or "normal" amount, because there's no variable-income input to override it with.
+3.Hit the income request without knowing why it's needed, who sees it, or whether it affects credit.
+4. Resolve the uncertainty in one of four ways:
+a. Call the contact centre, mainly for reassurance about what happens after a missed payment, not because information is missing.
+b. Under-report income deliberately to avoid giving a "wrong" answer.
+c. Accept the default and silently commit to an amount that's too high.
+d. Abandon, in some cases without starting at all.
+- **Problem Hook , your one-sentence framing of the business crisis (M1):** Today's journey loses money and agent capacity at two points: before an agreement is reached, and after it. Left unchanged, costs rise with volume, portfolio value erodes, and the headline metric (SSR) can mask the problem.
+- **Value Proposition , the outcome your initiative promised to deliver (M1):** Create a transparent, guided repayment journey that helps consumers choose sustainable instalment plans the first time, reducing unnecessary agent interactions while improving long-term recovery performance beyond SSR.
 
-## Finalized product hypothesis
+## Read your data snapshots
+- **Does the funnel data confirm your M2 friction point, or does it tell a different story? Note where the numbers align with the qualitative pain you found and where they diverge.:** _(not filled in)_
+- **Do the retention patterns align with the workaround your M2 persona used to find content? Note what the Mo. 0→1 drop suggests about the onboarding experience your persona described as frustrating.:** _(not filled in)_
+- **Does the LTV gap and the content mix (61% trending for Wanderers) confirm the moment of misery your persona described? Note which segment your persona is in and whether the data confirms their pain.:** _(not filled in)_
+- **Does the low adoption confirm your persona is burdened by tools they don’t use? Note whether the low scheduling adoption (42%) for coordinators matches your M2 moment of misery.:** _(not filled in)_
+- **Does the workflow data match the manual process or hack you documented in M2? Note whether the specific drop-offs or time gaps explain why your persona avoids the digital tool.:** _(not filled in)_
+- **Look at the CSAT heatmap. Which specific cell most directly maps to your persona’s friction? Note how the NPS trend justifies the urgency of your M1 Problem Hook.:** _(not filled in)_
 
-> Based on [qual + quant evidence], I believe that [solving X] for [persona] will result in [outcome], as measured by a [X%] change in [success metric]. I will protect [guardrail metric] and make a go/no-go decision after [decision window].
+## Step 3 · Craft your hypothesis
+- **Qualitative evidence (from M2) , quote the specific friction / moment of misery for your persona:** P3: "They ask me what I can afford per month. My pay changes every month. Do I put my best month? My worst month? Whatever I put, I feel like I'm signing up to it forever."
+- **Quantitative evidence (from M3) , name the metric or data point that confirms the pain; cite the number:** 26,8 % drop-offs on the payment slider & 19% payments missed within 60 days, so the users are not able to pay their monthly instalments.
+- **Persona , role, goal, and the friction you confirmed in the reconciliation steps:** Role: A debtor with variable income and multiple claims who is looking for a quick answer.
+Goal: Find out whether and how they can pay in installments without committing long-term to something they can't sustain.
+Friction: The slider shows a preset amount, which they read as the recommended norm. At the same time, there's no way to express "best month vs. worst month," and it's unclear what happens if they miss a payment (fear of full acceleration). Result: they either abandon, call the contact centre, or silently commit to an amount that's too high.
+- **Problem you are solving , one sentence describing the specific friction this initiative removes:** Debtors with variable income can't tell what monthly amount is safe to commit to, because the slider presents a preset value as the norm, offers no way to express income that fluctuates, and doesn't say what happens if a payment is missed, so they abandon, call, or silently commit to a plan they can't sustain.
+- **Strategic outcome , what behaviour change do you expect, and how does it map to retention / revenue / churn?:** Variable-income debtors choose an instalment amount based on their own realistic income instead of the preset, and complete the slider step with confidence instead of dropping off or calling. Fewer plans are created at amounts that are too high.
 
-## Success metrics
-
-| Metric | Type | Target | Why it matters |
-|---|---|---|---|
-| _North-star_ | | _____ | _____ |
-| _Leading indicator_ | | _____ | _____ |
-| _Guardrail_ | | _____ | _____ |
+Retention → more agreements that survive the first 60 days (plan survival rather than plan creation). Revenue → more durable recovery per case, even if the monthly amount per plan is sometimes lower. Churn → fewer consumers abandoning at the slider (26.8% baseline) and fewer failed agreements that return escalated to agents.
+- **Primary success metric (initiative signal) , the leading indicator that tells you the gap is closing:** Slider-step completion rate with an actively chosen amount, i.e. the share of users who reach the payment slider and complete it with a value they changed from the preset. The drop-off rate from 26.8% should be decreased.
+- **Guardrail metric (product signal) , the metric that must NOT drop; it protects your existing base:** Share of new instalment agreements missing a payment within 60 days. Must not exceed the 19% baseline; segmented by chosen amount vs. preset default.
+- **Decision window , how much time or data before you scale, pivot, or kill? minimum threshold to proceed?:** Decision window: Two-stage read-out. Stage 1 (leading): after ~600 slider starters per arm (test vs. current slider), assess slider completion with an actively chosen amount. Stage 2 (guardrail): after ~850 new agreements per arm, plus 60 days after the last one was created, assess the share missing a payment within 60 days. Scale/pivot/kill is decided at Stage 2, not earlier.
+Minimum to proceed: (1) slider drop-off clearly below 26.8% (proposed: ≤ 22%), (2) 60-day missed-payment rate not above the 19% baseline (upper bound of the confidence interval ≤ 22%), (3) no increase in vulnerability or complaint signals.
+Pivot: primary metric improves but the guardrail worsens. Kill: no primary improvement after the full sample, or the guardrail exceeds 24% at any checkpoint.
+- **Draft your full hypothesis sentence , one to three sentences; quote the metric, name the persona, name the outcome:** Based on P3's statement "Whatever I put, I feel like I'm signing up to it forever" (qual), and a 26.8% drop-off at the payment slider alongside a 19% missed-payment rate within 60 days (quant), I believe that letting debtors freely choose their instalment amount, giving them a clear explanation of what happens if an instalment is missed before they confirm, and the option to adjust their instalments after the agreement is set up, for debtors with variable income who want a quick answer on whether they can pay in instalments, will result in more users completing the slider step instead of dropping off or calling, as measured by a positive change in the slider-step completion rate (baseline: 73.2%). I will protect the 60-day missed-payment rate of new agreements, which must not exceed the 19% baseline, and will make a go/no-go decision after Stage 2 of the read-out: ~850 new agreements per arm plus 60 days after the last one was created.
