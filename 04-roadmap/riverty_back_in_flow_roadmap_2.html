@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverty Back in Flow – Instalment Journey Roadmap</title>
+<style>
+  :root {
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --ink: #12302b;
+    --muted: #55706a;
+    --line: #d5e0db;
+    --accent: #0e6b57;
+    --accent-ink: #ffffff;
+    --now: #0e6b57;
+    --next: #2a5db0;
+    --later: #7b6a2a;
+    --cut: #a23b3b;
+    --quick: #1f7a5a;   --quick-bg: #dcf1e7;
+    --major: #2a5db0;   --major-bg: #dce8f9;
+    --fill: #7a6a1f;    --fill-bg: #f3edcd;
+    --sink: #a23b3b;    --sink-bg: #f7dddd;
+    --warn-bg: #fff3d6; --warn-ink: #6b4d00;
+    --shadow: 0 1px 2px rgba(18,48,43,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1a18; --surface: #17251f; --ink: #e5f0ec; --muted: #94aca5; --line: #2a3d37;
+      --accent: #4fd1ae; --accent-ink: #08241d;
+      --now: #4fd1ae; --next: #8db4f2; --later: #e0cf7a; --cut: #f0a0a0;
+      --quick: #6fd1a8; --quick-bg: #1b3a2f;
+      --major: #8db4f2; --major-bg: #1c2f4d;
+      --fill: #e0cf7a;  --fill-bg: #3a3518;
+      --sink: #f0a0a0;  --sink-bg: #4a2323;
+      --warn-bg: #3b3210; --warn-ink: #f0d98a;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; line-height: 1.5; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  header { padding: 28px 24px 18px; max-width: 1280px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; font-weight: 600; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  h1 { margin: 8px 0 4px; font-size: 1.8rem; letter-spacing: -.01em; }
+  .meta { color: var(--muted); margin: 0; font-size: .95rem; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 18px; }
+  .toolbar .label { font-size: .85rem; color: var(--muted); margin-right: 4px; }
+  .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; font-size: .85rem; font-weight: 600; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .chip .sw { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+  .spacer { flex: 1; }
+  .reset { border: 1px solid var(--line); background: transparent; border-radius: 6px; padding: 5px 12px; font-size: .85rem; color: var(--muted); }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 0 24px 56px; }
+  .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } }
+
+  .lane { background: color-mix(in srgb, var(--surface) 55%, var(--bg)); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-height: 160px; }
+  .lane-head { border-top: 4px solid var(--c); margin: -14px -14px 12px; padding: 12px 14px 0; }
+  .lane-title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .lane-title h2 { margin: 0; font-size: 1.1rem; color: var(--c); }
+  .count { font-size: .85rem; color: var(--muted); }
+  .lane-sub { color: var(--muted); font-size: .85rem; margin: 2px 0 8px; }
+  .load { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--muted); padding-bottom: 12px; }
+  .load .pips { display: flex; gap: 2px; flex-wrap: wrap; }
+  .load .pips i { width: 8px; height: 12px; border-radius: 2px; background: var(--c); opacity: .85; }
+  .lane-note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 6px; padding: 8px 10px; font-size: .82rem; margin-bottom: 12px; }
+  .empty { border: 1px dashed var(--line); border-radius: 8px; padding: 18px; text-align: center; color: var(--muted); font-size: .9rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow); }
+  .card.dim { opacity: .28; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .card h3 { margin: 0; font-size: .98rem; line-height: 1.3; }
+  .badge { flex: none; padding: 3px 10px; border-radius: 999px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+  .badge.quick { background: var(--quick-bg); color: var(--quick); }
+  .badge.major { background: var(--major-bg); color: var(--major); }
+  .badge.fill  { background: var(--fill-bg);  color: var(--fill); }
+  .badge.sink  { background: var(--sink-bg);  color: var(--sink); }
+  .scores { display: flex; gap: 12px; margin: 8px 0 6px; font-size: .8rem; color: var(--muted); }
+  .scores b { color: var(--ink); }
+  .rationale { margin: 0; font-size: .88rem; color: var(--ink); }
+  .watch { margin: 8px 0 0; font-size: .82rem; background: var(--warn-bg); color: var(--warn-ink); border-radius: 6px; padding: 6px 9px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .actions .lbl { font-size: .78rem; color: var(--muted); align-self: center; margin-right: 2px; }
+  .mv { border: 1px solid var(--line); background: transparent; border-radius: 5px; padding: 2px 9px; font-size: .78rem; font-weight: 600; }
+  .mv:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .mv.danger:hover { background: var(--cut); border-color: var(--cut); color: #fff; }
+
+  .cut-section { margin-top: 28px; border: 1px solid var(--line); border-radius: 10px; padding: 16px; background: var(--surface); }
+  .cut-section h2 { margin: 0 0 2px; font-size: 1.1rem; color: var(--cut); }
+  .cut-section > p { margin: 0 0 12px; color: var(--muted); font-size: .88rem; }
+  .cut-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .cut-grid .card { margin: 0; border-style: dashed; background: transparent; }
+  .cut-grid h3 { text-decoration: line-through; text-decoration-color: var(--cut); text-decoration-thickness: 1px; }
+
+  .card[draggable="true"] { cursor: grab; }
+  .card[draggable="true"]:active { cursor: grabbing; }
+  .card.dragging { opacity: .35; }
+  .card.drop-before { box-shadow: 0 -4px 0 0 var(--accent); }
+  .card.drop-end { box-shadow: 0 4px 0 0 var(--accent); }
+  .lane.over, .cut-section.over { outline: 2px dashed var(--accent); outline-offset: -3px; }
+  .grip { color: var(--muted); font-size: .9rem; letter-spacing: -2px; margin-right: 6px; user-select: none; }
+  .hint { color: var(--muted); font-size: .85rem; margin: 0 0 14px; }
+
+  footer { max-width: 1280px; margin: 0 auto; padding: 0 24px 40px; color: var(--muted); font-size: .8rem; }
+  @media (prefers-reduced-motion: no-preference) { .card { transition: opacity .15s; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot" aria-hidden="true"></span> Riverty Back in Flow</div>
+  <h1>Instalment journey roadmap</h1>
+  <p class="meta">Team: 6 engineers + 2 designers · 2-week sprints · Primary metric: slider-step completion with an actively chosen amount · Guardrail: 60-day missed payments ≤ 19%</p>
+  <div class="toolbar" role="group" aria-label="Filter by quadrant">
+    <span class="label">Highlight:</span>
+    <button class="chip" data-q="Quick Win" aria-pressed="false"><span class="sw" style="background:var(--quick)"></span>Quick Win</button>
+    <button class="chip" data-q="Major Project" aria-pressed="false"><span class="sw" style="background:var(--major)"></span>Major Project</button>
+    <button class="chip" data-q="Fill-In" aria-pressed="false"><span class="sw" style="background:var(--fill)"></span>Fill-In</button>
+    <button class="chip" data-q="Time Sinker" aria-pressed="false"><span class="sw" style="background:var(--sink)"></span>Time Sinker</button>
+    <span class="spacer"></span>
+    <button class="reset" id="reset">Reset roadmap</button>
+  </div>
+</header>
+
+<main>
+  <p class="hint">Drag cards between NOW, NEXT, LATER and the Cut List, or reorder them within a lane. The buttons on each card do the same via keyboard or touch.</p>
+  <div class="lanes" id="lanes"></div>
+
+  <section class="cut-section" data-lane="cut" aria-labelledby="cut-h">
+    <h2 id="cut-h">Cut List</h2>
+    <p>Items deliberately not built in this initiative. Restore them to any lane if the decision changes.</p>
+    <div class="cut-grid" id="cut"></div>
+  </section>
+</main>
+
+<footer>Effort and value scores (1–5) come from the Effort vs. Value assessment. Moves and reordering are kept in memory only and reset when the page is reloaded.</footer>
+
+<script>
+  const FEATURES = [
+    { id: 1, name: "Free amount input alongside the slider", v: 4, e: 4, q: "Major Project",
+      why: "Lets a variable-income debtor type their own figure instead of dragging from the 150 anchor (P3, P4), which directly produces actively chosen completions.",
+      watch: "Plan check is cut, so nothing protects the 19% guardrail from overpromised plans (A6). Segment missed payments by chosen amount from day one and agree a stop threshold. The multi-claim split (P2) must be solved here." },
+    { id: 3, name: "\u201CWhat if I miss an instalment?\u201D before confirmation", v: 3, e: 2, q: "Quick Win",
+      why: "Relieves the fear in P7 and the \u201Clocked in\u201D feeling; engineering is trivial, Legal sign-off is the real bottleneck.",
+      watch: "Sits after the slider, so it barely moves slider-step completion. Start the Legal review immediately." },
+    { id: 7, name: "Live preview of term and total", v: 3, e: 2, q: "Quick Win",
+      why: "Makes the consequence of each amount visible and reduces the \u201Cis this smart?\u201D doubt from P4." },
+    { id: 8, name: "Flexible start date (payday-oriented)", v: 2, e: 4, q: "Time Sinker",
+      why: "Addresses the timing-driven exit in P9, but rests on a single quote and touches scheduling, direct debit and client-specific terms.",
+      watch: "Scored Time Sinker and placed in NOW: it competes for capacity with #1 and does not act on the slider step." },
+    { id: 2, name: "Neutral slider starting value", v: 4, e: 1, q: "Quick Win",
+      why: "Removing the 150 default attacks the anchoring in P4 at the source for almost no engineering cost.",
+      watch: "Define \u201Cactively chosen\u201D before building: without a preset, \u201Cchanged from preset\u201D is true for everyone and the metric inflates." },
+    { id: 4, name: "Post-agreement adjustment in the portal", v: 3, e: 5, q: "Major Project",
+      why: "Removes the \u201Cforever\u201D fear at its root (P3) and cuts failed-agreement calls (A6), but needs changes to instalment processing, agent visibility and compliance.",
+      watch: "No effect on the slider step on day one." },
+    { id: 5, name: "\u201CYou can adjust this later\u201D note at the slider", v: 4, e: 1, q: "Quick Win",
+      why: "Speaks directly to P3\u2019s \u201Csigning up to it forever\u201D at the moment of decision, for the cost of a text component.",
+      watch: "Only say \u201Cadjust in the portal\u201D once #4 is live; until then \u201Ccontact us\u201D." },
+    { id: 6, name: "Income guidance for variable income", v: 4, e: 2, q: "Quick Win",
+      why: "A one-line \u201Cbase it on a weaker month\u201D hint answers P3\u2019s \u201Cbest or worst month?\u201D and protects the 19% guardrail.",
+      watch: "Hint only. A suggested amount from a calculator would become the new anchor (P4)." },
+    { id: 10, name: "Quick path to a human at the slider", v: 2, e: 4, q: "Time Sinker",
+      why: "Serves P10\u2019s need for reassurance and the agent-context gap (A1, A2), but the data handoff is expensive and pulls users out of the digital flow.",
+      watch: "Keep a plain contact link as baseline support path for vulnerable consumers (guardrail)." },
+    { id: 9, name: "\u201CPlan check\u201D for conspicuous amounts", v: 2, e: 2, q: "Fill-In",
+      why: "Adds friction and is neutral to negative for the primary metric; it was the only mechanism protecting #1 against the 19% guardrail." }
+  ];
+
+  const INITIAL = {
+    now:  [1, 3, 7, 8],
+    next: [2, 4, 5],
+    later:[6, 10],
+    cut:  [9]
+  };
+
+  const LANES = [
+    { key: "now",  title: "NOW",   sub: "Current 2-week sprint", color: "var(--now)" },
+    { key: "next", title: "NEXT",  sub: "Following 1\u20132 sprints", color: "var(--next)" },
+    { key: "later",title: "LATER", sub: "Backlog", color: "var(--later)" }
+  ];
+
+  const QCLASS = { "Quick Win": "quick", "Major Project": "major", "Fill-In": "fill", "Time Sinker": "sink" };
+  const byId = Object.fromEntries(FEATURES.map(f => [f.id, f]));
+  let state = JSON.parse(JSON.stringify(INITIAL));
+  let highlight = null;
+
+  function laneOf(id) { return Object.keys(state).find(k => state[k].includes(id)); }
+
+  function move(id, to, index) {
+    const from = laneOf(id);
+    if (!from) return;
+    if (from === to && index === undefined) return;
+    state[from] = state[from].filter(x => x !== id);
+    const pos = index === undefined ? state[to].length : Math.max(0, Math.min(index, state[to].length));
+    state[to].splice(pos, 0, id);
+    render();
+  }
+
+  function cardHTML(f, current) {
+    const dim = highlight && f.q !== highlight ? " dim" : "";
+    const targets = [["now","Now"],["next","Next"],["later","Later"],["cut","Cut"]].filter(t => t[0] !== current);
+    const label = current === "cut" ? "Restore to:" : "Move to:";
+    const btns = targets
+      .filter(t => !(current === "cut" && t[0] === "cut"))
+      .map(t => `<button class="mv${t[0] === "cut" ? " danger" : ""}" data-id="${f.id}" data-to="${t[0]}" aria-label="${label} ${t[1]}: ${f.name.replace(/"/g,'')}">${t[1]}</button>`).join("");
+    return `
+      <article class="card${dim}" draggable="true" data-id="${f.id}">
+        <div class="card-top">
+          <h3><span class="grip" aria-hidden="true">\u22EE\u22EE</span>${f.name}</h3>
+          <span class="badge ${QCLASS[f.q]}">${f.q}</span>
+        </div>
+        <div class="scores"><span>Value <b>${f.v}/5</b></span><span>Effort <b>${f.e}/5</b></span></div>
+        <p class="rationale">${f.why}</p>
+        ${f.watch ? `<p class="watch"><strong>Watch-out:</strong> ${f.watch}</p>` : ""}
+        <div class="actions"><span class="lbl">${label}</span>${btns}</div>
+      </article>`;
+  }
+
+  function laneNote(key, items) {
+    const big = items.filter(f => f.e >= 4).length;
+    if (key === "now" && big >= 2) {
+      return `<div class="lane-note">${big} items with Effort \u2265 4 in a single 2-week sprint. Check this against the capacity of 6 engineers + 2 designers.</div>`;
+    }
+    return "";
+  }
+
+  function render() {
+    const lanesEl = document.getElementById("lanes");
+    lanesEl.innerHTML = LANES.map(l => {
+      const items = state[l.key].map(id => byId[id]);
+      const effort = items.reduce((s, f) => s + f.e, 0);
+      const pips = items.flatMap(f => Array.from({ length: f.e }, () => "<i></i>")).join("");
+      return `
+        <section class="lane" data-lane="${l.key}" style="--c:${l.color}" aria-labelledby="lane-${l.key}">
+          <div class="lane-head">
+            <div class="lane-title"><h2 id="lane-${l.key}">${l.title}</h2><span class="count">${items.length} ${items.length === 1 ? "item" : "items"}</span></div>
+            <p class="lane-sub">${l.sub}</p>
+            <div class="load" title="Sum of effort scores"><span>Effort load ${effort}</span><span class="pips" aria-hidden="true">${pips}</span></div>
+          </div>
+          ${laneNote(l.key, items)}
+          ${items.length ? items.map(f => cardHTML(f, l.key)).join("") : `<div class="empty">Nothing planned here.</div>`}
+        </section>`;
+    }).join("");
+
+    const cutEl = document.getElementById("cut");
+    const cutItems = state.cut.map(id => byId[id]);
+    cutEl.innerHTML = cutItems.length
+      ? cutItems.map(f => cardHTML(f, "cut")).join("")
+      : `<div class="empty">No items cut.</div>`;
+  }
+
+  // ---- Drag & drop ----
+  let dragId = null;
+
+  function clearMarks() {
+    document.querySelectorAll(".over, .drop-before, .drop-end").forEach(el => el.classList.remove("over", "drop-before", "drop-end"));
+  }
+  function clearDrag() {
+    dragId = null;
+    clearMarks();
+    document.querySelectorAll(".dragging").forEach(el => el.classList.remove("dragging"));
+  }
+  function targetFor(zone, x, y) {
+    const isGrid = zone.dataset.lane === "cut";
+    const cards = [...zone.querySelectorAll(".card[data-id]")].filter(c => Number(c.dataset.id) !== dragId);
+    let before = null;
+    for (const c of cards) {
+      const r = c.getBoundingClientRect();
+      const hit = isGrid ? (y < r.top || (y <= r.bottom && x < r.left + r.width / 2)) : y < r.top + r.height / 2;
+      if (hit) { before = c; break; }
+    }
+    return { cards, before };
+  }
+
+  document.addEventListener("dragstart", e => {
+    const card = e.target.closest && e.target.closest(".card[data-id]");
+    if (!card) return;
+    dragId = Number(card.dataset.id);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(dragId));
+    setTimeout(() => card.classList.add("dragging"), 0);
+  });
+  document.addEventListener("dragend", clearDrag);
+
+  document.addEventListener("dragover", e => {
+    if (dragId === null) return;
+    const zone = e.target.closest && e.target.closest("[data-lane]");
+    clearMarks();
+    if (!zone) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    zone.classList.add("over");
+    const { cards, before } = targetFor(zone, e.clientX, e.clientY);
+    if (before) before.classList.add("drop-before");
+    else if (cards.length) cards[cards.length - 1].classList.add("drop-end");
+  });
+
+  document.addEventListener("drop", e => {
+    if (dragId === null) return;
+    const zone = e.target.closest && e.target.closest("[data-lane]");
+    if (!zone) { clearDrag(); return; }
+    e.preventDefault();
+    const { cards, before } = targetFor(zone, e.clientX, e.clientY);
+    const ids = cards.map(c => Number(c.dataset.id));
+    const index = before ? ids.indexOf(Number(before.dataset.id)) : ids.length;
+    const id = dragId;
+    clearDrag();
+    move(id, zone.dataset.lane, index);
+  });
+
+  document.addEventListener("click", e => {
+    const mv = e.target.closest(".mv");
+    if (mv) { move(Number(mv.dataset.id), mv.dataset.to); return; }
+    const chip = e.target.closest(".chip");
+    if (chip) {
+      const q = chip.dataset.q;
+      highlight = highlight === q ? null : q;
+      document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.q === highlight)));
+      render();
+    }
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    state = JSON.parse(JSON.stringify(INITIAL));
+    highlight = null;
+    document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
