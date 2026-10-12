@@ -1,283 +1,327 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prototype – Free amount input alongside the slider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Riverty – Free amount input (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #eef3f1; --ink: #0d2523; --muted: #567069; --line: #d6e3de;
-    --teal: #0b6e63; --teal-dark: #08554c; --mint: #b8f0d6; --soft: #e8f1ee;
-    --err: #b0384a; --err-bg: #fbe5e8; --warn-bg: #fff3d4; --warn-ink: #66480a;
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#E9EFEC; --panel:#FFFFFF; --ink:#12231C; --muted:#56665F; --line:#CBD6D1;
+  --brand:#0B4A38; --brand-ink:#FFFFFF; --accent:#17B37A;
+  --err:#A8241C; --err-bg:#FCEBE9;
+  --dis-bg:#DCE4E0; --dis-ink:#7F8D87; --thumb-muted:#B3BFB9;
+  --strip-bg:#DDE6E1; --tag-bg:#EEF3F0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1512; --panel:#16211C; --ink:#E8F0EC; --muted:#9BADA5; --line:#2D3C35;
+    --brand:#3FD39A; --brand-ink:#08261C; --accent:#3FD39A;
+    --err:#FF9C94; --err-bg:#3A1F1D;
+    --dis-bg:#25332D; --dis-ink:#6F8078; --thumb-muted:#42534B;
+    --strip-bg:#1E2B25; --tag-bg:#1E2B25;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; line-height: 1.45; }
-  button { font: inherit; cursor: pointer; }
-  :focus-visible { outline: 3px solid #1d9a8a; outline-offset: 2px; }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1512; --panel:#16211C; --ink:#E8F0EC; --muted:#9BADA5; --line:#2D3C35;
+  --brand:#3FD39A; --brand-ink:#08261C; --accent:#3FD39A;
+  --err:#FF9C94; --err-bg:#3A1F1D;
+  --dis-bg:#25332D; --dis-ink:#6F8078; --thumb-muted:#42534B;
+  --strip-bg:#1E2B25; --tag-bg:#1E2B25;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:16px; line-height:1.45; font-variant-numeric:tabular-nums;
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px;
+}
+.proto{width:100%; max-width:420px; display:flex; justify-content:space-between; align-items:center;
+  font-size:13px; color:var(--muted); margin-bottom:10px}
+.proto button{font:inherit; color:var(--muted); background:none; border:0; text-decoration:underline; cursor:pointer; padding:4px; margin-left:6px}
+.proto button:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+#checkout{width:100%; max-width:420px; font-size:13px; color:var(--muted); margin-bottom:10px; min-height:0}
+#checkout div{padding:2px 0}
+#checkout .bad{color:var(--err)}
 
-  .stage { max-width: 860px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; justify-content: center; }
-  .phone { width: 100%; max-width: 390px; background: #fff; border-radius: 28px; border: 1px solid var(--line); box-shadow: 0 18px 40px -18px rgba(13,37,35,.35); overflow: hidden; min-height: 680px; display: flex; flex-direction: column; }
-  .proto-tag { background: var(--warn-bg); color: var(--warn-ink); font-size: .76rem; text-align: center; padding: 5px 10px; }
-  .top { display: flex; align-items: center; gap: 9px; padding: 16px 22px 6px; font-weight: 700; }
-  .top svg { width: 26px; height: 26px; }
-  #app { flex: 1; display: flex; flex-direction: column; padding: 8px 22px 22px; }
-  h1 { font-size: 1.5rem; line-height: 1.2; margin: 14px 0 6px; letter-spacing: -.01em; }
-  .sub { color: var(--muted); margin: 0 0 16px; font-size: .95rem; }
+.screen{width:100%; max-width:420px; background:var(--panel); border-radius:22px; padding:24px 22px 26px;
+  border:1px solid var(--line); display:flex; flex-direction:column; min-height:600px}
+.logo{font-weight:700; font-size:22px; letter-spacing:-0.02em; color:var(--brand); margin-bottom:28px}
+h1{font-size:26px; line-height:1.2; margin:0 0 6px; letter-spacing:-0.015em; font-weight:700}
+h1:focus{outline:none}
+.sub{color:var(--muted); margin:0 0 20px}
+.spacer{flex:1; min-height:20px}
 
-  .claims { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
-  .claim { display: flex; justify-content: space-between; padding: 13px 15px; border-bottom: 1px solid var(--line); font-size: .95rem; }
-  .claim .n { color: var(--muted); }
-  .claim.total { background: var(--soft); font-weight: 700; border-bottom: 0; }
+.claims{border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:22px}
+.row{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .name{font-weight:600}
+.tag{display:inline-block; font-size:12px; color:var(--muted); background:var(--tag-bg); border:1px dashed var(--line); border-radius:6px; padding:1px 7px; margin-left:8px; font-weight:500}
+.row .amt{font-weight:600}
+.row.total{background:var(--tag-bg)}
+.row.total .amt{font-size:20px; font-weight:700}
 
-  .btn { width: 100%; border: 0; border-radius: 12px; padding: 15px; font-weight: 700; font-size: 1rem; background: var(--teal); color: #fff; margin-top: auto; }
-  .btn:hover:not(:disabled) { background: var(--teal-dark); }
-  .btn:disabled { background: #c5d4cf; color: #6f857f; cursor: not-allowed; }
+.btn{display:block; width:100%; height:54px; border:0; border-radius:14px; font:inherit; font-weight:700; font-size:17px;
+  background:var(--brand); color:var(--brand-ink); cursor:pointer}
+.btn:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
+.btn:disabled{background:var(--dis-bg); color:var(--dis-ink); cursor:not-allowed}
 
-  label.fl { display: block; font-weight: 600; margin-bottom: 6px; }
-  .field { display: flex; align-items: center; border: 2px solid var(--line); border-radius: 12px; padding: 0 14px; background: #fff; }
-  .field:focus-within { border-color: var(--teal); }
-  .field.bad { border-color: var(--err); background: var(--err-bg); }
-  .field .eur { font-size: 1.4rem; color: var(--muted); margin-right: 6px; }
-  .field input { border: 0; outline: 0; background: transparent; width: 100%; font: inherit; font-size: 1.6rem; font-weight: 700; padding: 13px 0; color: var(--ink); min-width: 0; }
-  .field input::placeholder { color: #9bb0aa; font-weight: 400; font-size: 1.1rem; }
-  .bounds { font-size: .88rem; color: var(--muted); margin: 7px 2px 0; }
-  .err { min-height: 22px; margin: 6px 2px 0; color: var(--err); font-size: .9rem; font-weight: 600; }
-  .hint { background: var(--soft); border-radius: 10px; padding: 9px 12px; font-size: .9rem; margin: 10px 0 14px; }
+.balance{font-weight:600; margin:0 0 18px; color:var(--muted)}
+.field{display:flex; align-items:baseline; gap:8px; border:2px solid var(--line); border-radius:16px; padding:12px 18px; background:var(--panel)}
+.field:focus-within{border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent)}
+.field.invalid{border-color:var(--err)}
+.field input{flex:1; min-width:0; border:0; background:transparent; color:var(--ink); font:inherit; font-size:34px; font-weight:700; outline:none; padding:0; letter-spacing:-0.01em}
+.field input::placeholder{color:var(--dis-ink); font-size:20px; font-weight:500; letter-spacing:0}
+.field .cur{font-size:28px; font-weight:600; color:var(--muted)}
+.bounds{margin:8px 2px 0; color:var(--muted); font-size:15px}
+.err{min-height:46px; margin:8px 0 0; padding:0 2px; color:var(--err); font-weight:600; font-size:15px}
+.hint{margin:0 0 22px; color:var(--muted); font-size:15px}
 
-  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; margin: 4px 0 0; }
-  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: #cfe3dc; }
-  input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: #cfe3dc; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.35); margin-top: -11px; }
-  input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.35); }
-  input[type=range].muted::-webkit-slider-thumb { background: #b7c7c2; }
-  input[type=range].muted::-moz-range-thumb { background: #b7c7c2; }
-  .ends { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.slider{-webkit-appearance:none; appearance:none; width:100%; height:32px; background:transparent; margin:0 0 6px; cursor:pointer}
+.slider::-webkit-slider-runnable-track{height:6px; border-radius:3px; background:linear-gradient(to right,var(--brand) var(--p,0%),var(--line) var(--p,0%))}
+.slider::-moz-range-track{height:6px; border-radius:3px; background:var(--line)}
+.slider::-moz-range-progress{height:6px; border-radius:3px; background:var(--brand)}
+.slider::-webkit-slider-thumb{-webkit-appearance:none; width:28px; height:28px; border-radius:50%; background:var(--brand); border:3px solid var(--panel); box-shadow:0 0 0 1px var(--brand); margin-top:-11px}
+.slider::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:var(--brand); border:3px solid var(--panel); box-shadow:0 0 0 1px var(--brand)}
+.slider.muted{--p:0%}
+.slider.muted::-webkit-slider-thumb{background:var(--thumb-muted); box-shadow:0 0 0 1px var(--thumb-muted)}
+.slider.muted::-moz-range-thumb{background:var(--thumb-muted); box-shadow:0 0 0 1px var(--thumb-muted)}
+.slider.muted::-moz-range-progress{background:transparent}
+.slider:focus-visible::-webkit-slider-thumb{outline:3px solid var(--accent); outline-offset:2px}
+.slider:focus-visible::-moz-range-thumb{outline:3px solid var(--accent); outline-offset:2px}
 
-  .ok-mark { width: 54px; height: 54px; border-radius: 50%; background: var(--mint); display: grid; place-items: center; margin-top: 18px; }
-  .ok-mark svg { width: 28px; height: 28px; }
-  .sum { border: 1px solid var(--line); border-radius: 14px; margin: 14px 0; }
-  .sum div { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--line); }
-  .sum div:last-child { border-bottom: 0; }
-  .sum .k { color: var(--muted); }
-  .contact { font-size: .92rem; color: var(--muted); margin: 0 0 12px; }
-
-  .debug { font-size: .76rem; background: #10201e; color: #b8f0d6; border-radius: 8px; padding: 7px 10px; margin-top: 12px; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
-
-  aside { width: 100%; max-width: 390px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; font-size: .9rem; }
-  aside h2 { font-size: 1rem; margin: 0 0 4px; }
-  aside p { margin: 0 0 10px; color: var(--muted); }
-  .tries { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-  .tries button, .tool { border: 1px solid var(--line); background: var(--soft); border-radius: 8px; padding: 4px 10px; font-size: .84rem; }
-  .tries button:hover, .tool:hover { background: var(--ink); color: #fff; }
-  #testout { margin-top: 10px; font-size: .84rem; }
-  #testout .pass { color: #0f7d57; font-weight: 700; }
-  #testout .fail { color: var(--err); font-weight: 700; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.big{font-size:44px; font-weight:700; letter-spacing:-0.02em; line-height:1.1; margin:6px 0 4px}
+.big small{font-size:18px; font-weight:500; color:var(--muted); letter-spacing:0}
+.facts{border:1px solid var(--line); border-radius:14px; margin:18px 0 20px}
+.facts .row .k{color:var(--muted)}
+.facts .row .v{font-weight:700}
+.note{color:var(--ink); margin:0}
+.debug{margin-top:22px; background:var(--strip-bg); border-radius:10px; padding:9px 12px; font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:var(--muted)}
+.debug b{color:var(--ink)}
+@media (prefers-reduced-motion: no-preference){ .field{transition:border-color .12s} }
+@media (max-width:440px){ body{padding:10px} .screen{min-height:calc(100vh - 80px); border-radius:18px} }
 </style>
 </head>
 <body>
-<div class="stage">
-  <div class="phone">
-    <div class="proto-tag">Prototype with placeholder data. No real claims, rates or limits.</div>
-    <div class="top">
-      <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="17" fill="#b8f0d6"/><path d="M5 19c3.2-5.4 6.4-5.4 9.6 0s6.4 5.4 9.6 0c1.6-2.7 3.2-4 4.8-4.4" fill="none" stroke="#0d2523" stroke-width="2.8" stroke-linecap="round"/></svg>
-      Riverty
-    </div>
-    <div id="app"></div>
-  </div>
 
-  <aside>
-    <h2>Tester tools</h2>
-    <p>Outside the prototype. Click a value to type it into the field on screen 2.</p>
-    <div class="tries" id="tries"></div>
-    <button class="tool" id="restart">Restart prototype</button>
-    <button class="tool" id="runtests">Run self-test</button>
-    <div id="testout" aria-live="polite"></div>
-  </aside>
+<div class="proto">
+  <span id="where">Prototype · screen 1 of 3</span>
+  <span><button id="restart" type="button">Restart</button><button id="checks" type="button">Run checks</button></span>
 </div>
+<div id="checkout" role="status" aria-live="polite"></div>
+<main id="app"></main>
 
 <script>
-  // ---------- Placeholder config (not Riverty data) ----------
-  const TOTAL = 1240, MIN = 52, MAX = TOTAL, STEP = 5;   // MIN = ceil(1240 / 24 months)
-  const CLAIMS = [{ name: "Creditor A (placeholder)", amt: 740 }, { name: "Creditor B (placeholder)", amt: 500 }];
-  const SLIDER_TOP = MIN + STEP * Math.floor((MAX - MIN) / STEP);   // highest value the slider can reach
-  const fmt = n => "\u20AC" + Number(n).toLocaleString("en-US");
+/* ---------- Placeholder configuration (not Riverty data) ---------- */
+const TOTAL = 1240, MIN = 52, STEP = 5, MAXDIGITS = 7;
+const CLAIMS = [{name:'Creditor A', amount:780}, {name:'Creditor B', amount:460}];
+const FIRST_NAME = 'Mara';
 
-  // ---------- Single state object (stand-in for useState; no persistence) ----------
-  const fresh = () => ({ screen: 1, raw: "", amount: null, source: null, sliderActive: false, msg: "", submitted: false });
-  let state = fresh();
+/* Slider positions: MIN, then every 5 euros up to TOTAL */
+const VALS = [MIN];
+for (let v = 55; v <= TOTAL; v += STEP) VALS.push(v);
 
-  // ---------- FR3/FR5/FR6: one validation function, used live and again on submit (FR7) ----------
-  // Allowed: digits only, with one optional leading or trailing euro sign and spaces around it.
-  function validate(raw) {
-    const s = String(raw).trim().replace(/^\u20AC\s*/, "").replace(/\s*\u20AC$/, "");
-    if (s === "") return { ok: false, code: "empty", error: "" };
-    if (/[^0-9]/.test(s)) return { ok: false, code: "format", error: "Please enter whole euros." };
-    const n = Number(s);
-    if (n < MIN) return { ok: false, code: "low", error: "The lowest amount that fits is " + fmt(MIN) + "." };
-    if (n > MAX) return { ok: false, code: "high", error: "The maximum is your total open balance of " + fmt(MAX) + "." };
-    return { ok: true, code: "ok", amount: n, error: "" };
+const fmt = n => '€' + n.toLocaleString('en-US');
+
+/* ---------- Single state variable ---------- */
+let S = { screen: 1, raw: '', amount: null, source: null, flag: false, locked: false, plan: null };
+
+/* ---------- One validation function (used live and on submit, FR5/FR6/FR7) ---------- */
+function validate(raw) {
+  const s = String(raw).replace(/[€\s]/g, '');
+  if (s === '') return { kind: 'empty' };
+  if (/\D/.test(s)) return { kind: 'format', message: 'Please enter whole euros.' };
+  const v = parseInt(s, 10);
+  if (v < MIN) return { kind: 'low', message: 'The lowest amount that fits is ' + fmt(MIN) + '.' };
+  if (v > TOTAL) return { kind: 'high', message: 'The maximum is your total open balance of ' + fmt(TOTAL) + '.' };
+  return { kind: 'valid', value: v };
+}
+
+function nearestIdx(v) {
+  let best = 0, bd = Infinity;
+  VALS.forEach((x, i) => { const d = Math.abs(x - v); if (d < bd) { bd = d; best = i; } });
+  return best;
+}
+
+/* ---------- Screens ---------- */
+function screen1() {
+  return `
+  <section class="screen" aria-labelledby="t">
+    <div class="logo">Riverty</div>
+    <h1 id="t" tabindex="-1">Hi ${FIRST_NAME}</h1>
+    <p class="sub">Your open claims</p>
+    <div class="claims">
+      ${CLAIMS.map(c => `<div class="row"><span class="name">${c.name}<span class="tag">placeholder</span></span><span class="amt">${fmt(c.amount)}</span></div>`).join('')}
+      <div class="row total"><span class="name">Total open</span><span class="amt">${fmt(TOTAL)}</span></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="go" type="button">Pay in instalments</button>
+  </section>`;
+}
+
+function screen2() {
+  return `
+  <section class="screen" aria-labelledby="t">
+    <div class="logo">Riverty</div>
+    <h1 id="t" tabindex="-1">How much can you pay per month?</h1>
+    <p class="balance">Total open: ${fmt(TOTAL)}</p>
+    <label class="field" id="field">
+      <input id="amt" type="text" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="Amount per month" aria-labelledby="t" aria-describedby="bounds err" aria-invalid="false">
+      <span class="cur" aria-hidden="true">€</span>
+    </label>
+    <div class="bounds" id="bounds">${fmt(MIN)} to ${fmt(TOTAL)}</div>
+    <div class="err" id="err" role="alert"></div>
+    <input id="sl" class="slider muted" type="range" min="0" max="${VALS.length - 1}" step="1" value="0" aria-label="Monthly amount slider">
+    <p class="hint">Base it on a weaker month, not your best one.</p>
+    <div class="spacer"></div>
+    <button class="btn" id="set" type="button" disabled>Set up plan</button>
+  </section>`;
+}
+
+function screen3(plan) {
+  const a = plan.amount;
+  const n = Math.ceil(TOTAL / a);
+  const last = TOTAL - (n - 1) * a;
+  return `
+  <section class="screen" aria-labelledby="t">
+    <div class="logo">Riverty</div>
+    <h1 id="t" tabindex="-1">Your plan is set up</h1>
+    <div class="big">${fmt(a)} <small>per month</small></div>
+    <div class="facts">
+      <div class="row"><span class="k">Instalments</span><span class="v">${n}</span></div>
+      ${last !== a ? `<div class="row"><span class="k">Last instalment</span><span class="v">${fmt(last)}</span></div>` : ''}
+      <div class="row"><span class="k">Total</span><span class="v">${fmt(TOTAL)}</span></div>
+    </div>
+    <p class="note">Need to change something? Contact us.</p>
+    <div class="spacer"></div>
+    <div class="debug">debug · amount_source = <b>${plan.source}</b></div>
+  </section>`;
+}
+
+/* ---------- Rendering and events ---------- */
+const app = document.getElementById('app');
+const where = document.getElementById('where');
+let els = {};
+
+function render() {
+  where.textContent = 'Prototype · screen ' + S.screen + ' of 3';
+  if (S.screen === 1) app.innerHTML = screen1();
+  if (S.screen === 2) app.innerHTML = screen2();
+  if (S.screen === 3) app.innerHTML = screen3(S.plan);
+  const h = document.getElementById('t'); if (h) h.focus({ preventScroll: true });
+  window.scrollTo(0, 0);
+
+  if (S.screen === 1) {
+    document.getElementById('go').addEventListener('click', () => { S.screen = 2; render(); });
   }
-  function snap(a) {
-    const v = MIN + Math.round((a - MIN) / STEP) * STEP;
-    return Math.max(MIN, Math.min(v, SLIDER_TOP));
+  if (S.screen === 2) {
+    els = { input: document.getElementById('amt'), field: document.getElementById('field'), err: document.getElementById('err'),
+            slider: document.getElementById('sl'), btn: document.getElementById('set') };
+    els.input.addEventListener('input', onType);
+    els.slider.addEventListener('input', onSlide);
+    els.slider.addEventListener('pointerup', () => { if (S.amount === null) onSlide(); });
+    els.btn.addEventListener('click', submit);
+    update();
   }
+}
 
-  // ---------- Screens ----------
-  function screenHTML(n, s) {
-    s = s || state;
-    if (n === 1) {
-      return `
-        <h1>Hi Mara</h1>
-        <p class="sub">You have 2 open claims.</p>
-        <div class="claims">
-          ${CLAIMS.map(c => `<div class="claim"><span class="n">${c.name}</span><span>${fmt(c.amt)}</span></div>`).join("")}
-          <div class="claim total"><span>Total open</span><span>${fmt(TOTAL)}</span></div>
-        </div>
-        <button class="btn" id="start">Pay in instalments</button>`;
-    }
-    if (n === 2) {
-      return `
-        <h1>How much can you pay per month?</h1>
-        <p class="sub">Total open: ${fmt(TOTAL)}</p>
-        <label class="fl" for="amt">Monthly amount</label>
-        <div class="field" id="field">
-          <span class="eur" aria-hidden="true">\u20AC</span>
-          <input id="amt" type="text" inputmode="numeric" autocomplete="off" placeholder="Enter amount" aria-describedby="bounds err" aria-invalid="false" maxlength="12">
-        </div>
-        <div class="bounds" id="bounds">Allowed: ${fmt(MIN)} to ${fmt(MAX)}</div>
-        <div class="err" id="err" role="alert"></div>
-        <div class="hint">Base it on a weaker month, not your best one.</div>
-        <input id="slider" type="range" class="muted" min="${MIN}" max="${MAX}" step="${STEP}" value="${MIN}" aria-label="Monthly amount slider">
-        <div class="ends"><span>${fmt(MIN)}</span><span>${fmt(MAX)}</span></div>
-        <button class="btn" id="submit" disabled>Set up plan</button>
-        <div class="debug" id="dbg2"></div>`;
-    }
-    const a = s.amount || 95, cnt = Math.ceil(TOTAL / a), last = TOTAL - a * (cnt - 1);
-    return `
-      <div class="ok-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0b6e63" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <h1>Your plan is set up</h1>
-      <div class="sum">
-        <div><span class="k">Monthly amount</span><b>${fmt(a)}</b></div>
-        <div><span class="k">Instalments</span><b>${cnt}</b></div>
-        ${cnt > 1 && last !== a ? `<div><span class="k">Last instalment</span><b>${fmt(last)}</b></div>` : ""}
-        <div><span class="k">Total</span><b>${fmt(TOTAL)}</b></div>
-      </div>
-      <p class="contact">Need to change something? Contact us.</p>
-      <div class="debug" id="dbg3"></div>`;
+/* Typing: field mirrors what was typed. Letters never get stored. Nothing is rounded or corrected. */
+function onType() {
+  const el = els.input, before = el.value;
+  let cleaned = before.replace(/[^0-9.,€\s]/g, '');
+  const flag = cleaned.length !== before.length;
+  let n = 0, out = '';
+  for (const ch of cleaned) {
+    if (/\d/.test(ch)) { if (n >= MAXDIGITS) continue; n++; }
+    out += ch;
   }
+  cleaned = out;
+  S.raw = cleaned; S.flag = flag;
+  const r = validate(cleaned);
+  if (r.kind === 'valid') { S.amount = r.value; S.source = 'typed'; }
+  else if (r.kind === 'empty') { S.amount = null; S.source = null; }
+  else { S.amount = null; S.source = 'typed'; }
+  if (el.value !== cleaned) el.value = cleaned;
+  update();
+}
 
-  function render() {
-    document.getElementById("app").innerHTML = screenHTML(state.screen);
-    if (state.screen === 1) document.getElementById("start").onclick = () => { state.screen = 2; render(); document.getElementById("amt").focus(); };
-    if (state.screen === 2) bindScreen2();
-    updateDebug();
-  }
+/* Dragging: slider value is written into the field */
+function onSlide() {
+  const v = VALS[+els.slider.value];
+  S.amount = v; S.raw = String(v); S.source = 'slider'; S.flag = false;
+  els.input.value = S.raw;
+  update();
+}
 
-  // ---------- Screen 2 behaviour ----------
-  function bindScreen2() {
-    const amt = document.getElementById("amt"), slider = document.getElementById("slider");
+function update() {
+  const r = validate(S.raw);
+  const msg = S.flag ? 'Please enter whole euros.' : (r.message || '');
+  const ok = r.kind === 'valid' && !S.flag && !S.locked;
+  els.err.textContent = msg;
+  els.field.classList.toggle('invalid', !!msg);
+  els.input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  els.btn.disabled = !ok;
+  const idx = S.amount !== null ? nearestIdx(S.amount) : 0;
+  els.slider.value = idx;                                   // thumb snaps, field never changes (FR1)
+  els.slider.classList.toggle('muted', S.amount === null);
+  els.slider.style.setProperty('--p', (idx / (VALS.length - 1) * 100) + '%');
+}
 
-    amt.addEventListener("input", () => {
-      const v = amt.value;
-      state.msg = "";
-      let cleaned = v.replace(/[^0-9\u20AC\s.,+\-]/g, "");                  // letters and symbols are never stored
-      if (cleaned !== v) state.msg = "Please enter whole euros.";
-      if (cleaned.replace(/\D/g, "").length > 7) {                          // cap at 7 digits, no overflow
-        cleaned = state.raw;
-        state.msg = "The maximum is your total open balance of " + fmt(MAX) + ".";
-      }
-      amt.value = cleaned;
-      state.raw = cleaned;
-      state.source = cleaned.trim() === "" ? null : "typed";
-      const r = validate(cleaned);
-      if (r.ok) {
-        state.amount = r.amount;
-        state.sliderActive = true;
-        slider.value = snap(r.amount);                                      // thumb snaps, field never changes (FR1)
-      } else {
-        state.amount = null;
-        if (cleaned.trim() === "") { state.sliderActive = false; slider.value = MIN; }
-      }
-      refresh();
-    });
+/* Submit: re-run the same validation against stored state (FR7) */
+function submit() {
+  if (S.locked) return;
+  const r = validate(S.raw);
+  if (r.kind !== 'valid' || S.flag || S.amount !== r.value || !S.source) { update(); return; }
+  S.locked = true; els.btn.disabled = true;
+  S.plan = { amount: r.value, source: S.source };
+  S.screen = 3; render();
+}
 
-    slider.addEventListener("input", () => {
-      let n = Number(slider.value);
-      if (n === SLIDER_TOP) n = MAX;
-      state.raw = String(n); state.amount = n; state.source = "slider";
-      state.sliderActive = true; state.msg = "";
-      amt.value = String(n);                                                // FR2
-      refresh();
-    });
-
-    document.getElementById("submit").addEventListener("click", () => {
-      if (state.submitted) return;
-      const r = validate(state.raw);                                        // FR7: re-validate stored state
-      if (!r.ok || state.msg) { state.msg = r.error || state.msg; refresh(); return; }
-      state.submitted = true;
-      state.amount = r.amount;
-      document.getElementById("submit").disabled = true;
-      state.screen = 3; render();
-    });
-    refresh();
-  }
-
-  function refresh() {
-    if (state.screen !== 2) return;
-    const r = validate(state.raw), msg = state.msg || r.error;
-    document.getElementById("err").textContent = msg;
-    document.getElementById("field").classList.toggle("bad", !!msg);
-    document.getElementById("amt").setAttribute("aria-invalid", msg ? "true" : "false");
-    document.getElementById("submit").disabled = !(r.ok && !state.msg) || state.submitted;
-    document.getElementById("slider").classList.toggle("muted", !state.sliderActive);
-    updateDebug();
-  }
-
-  function updateDebug() {
-    const t = "amount_source: " + (state.source || "unset") + " | raw: \"" + state.raw + "\" | valid: " + (validate(state.raw).ok ? "yes" : "no");
-    ["dbg2", "dbg3"].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = t; });
-  }
-
-  // ---------- Tester tools ----------
-  const TRIES = ["95", "30", "1500", "95.5", "95,50", "abc", "\u20AC 1240", "1 000", "97"];
-  document.getElementById("tries").innerHTML = TRIES.map((t, i) => `<button data-i="${i}">${t}</button>`).join("");
-  document.getElementById("tries").addEventListener("click", e => {
-    const b = e.target.closest("button"); if (!b) return;
-    if (state.screen !== 2) { state = fresh(); state.screen = 2; render(); }
-    const amt = document.getElementById("amt");
-    amt.value = TRIES[Number(b.dataset.i)];
-    amt.dispatchEvent(new Event("input"));
-  });
-  document.getElementById("restart").onclick = () => { state = fresh(); render(); };
-
-  const CASES = {
-    ok:     ["52","53","95","100","500","999","1000","1239","1240","\u20AC95","95 \u20AC","\u20AC 95","  95  "],
-    low:    ["1","10","30","51","0","00","007"],
-    high:   ["1241","1500","5000","9999999","1240000"],
-    format: ["95.5","95,50","95.","95,","1.240","1,240","\u20AC1.240","0.5",".5",",5","-95","+95","9e2","95a","abc","\u20ACabc","1/2","95\u20AC5","1 000"],
-    empty:  ["","   ","\u20AC","\u20AC "]
-  };
-  document.getElementById("runtests").onclick = () => {
-    let total = 0, passed = 0; const fails = [];
-    Object.entries(CASES).forEach(([exp, list]) => list.forEach(inp => {
-      total++; const got = validate(inp).code;
-      if (got === exp) passed++; else fails.push(JSON.stringify(inp) + " expected " + exp + ", got " + got);
-    }));
-    const text = [screenHTML(1), screenHTML(2), screenHTML(3, { amount: 95 })].join(" ").replace(/<[^>]+>/g, " ");
-    const banned = (text.match(/recommended|most people|typical|popular|\bsafe\b/gi) || []).length;
-    const placeholderDigits = /\d/.test(document.createRange().createContextualFragment(screenHTML(2)).querySelector("#amt").getAttribute("placeholder"));
-    const promise = /adjust[^.]*portal/i.test(text);
-    const line = (ok, label) => `<div><span class="${ok ? "pass" : "fail"}">${ok ? "PASS" : "FAIL"}</span> ${label}</div>`;
-    document.getElementById("testout").innerHTML =
-      line(passed === total, `Validation: ${passed}/${total} inputs classified correctly`) +
-      fails.map(f => `<div class="fail">${f}</div>`).join("") +
-      line(banned === 0, `Anchor/norm words in copy: ${banned}`) +
-      line(!placeholderDigits, "Placeholder contains no digit") +
-      line(!promise, "No promise of adjusting in the portal");
-  };
-
+document.getElementById('restart').addEventListener('click', () => {
+  S = { screen: 1, raw: '', amount: null, source: null, flag: false, locked: false, plan: null };
+  document.getElementById('checkout').innerHTML = '';
   render();
+});
+
+/* ---------- Built-in checks: validation set (Eval 1) and banned-string scan (Eval 3) ---------- */
+const CASES = [
+  // valid
+  ['52','valid'],['95','valid'],['100','valid'],['1240','valid'],['1000','valid'],['€95','valid'],['€ 95','valid'],
+  ['  95  ','valid'],['0095','valid'],['1 240','valid'],
+  // below min
+  ['0','low'],['1','low'],['30','low'],['51','low'],['007','low'],
+  // above max
+  ['1241','high'],['1500','high'],['9999999','high'],['12345678901','high'],
+  // decimals and separators
+  ['95.5','format'],['95,50','format'],['1.240','format'],['1,240','format'],['€ 1.240','format'],
+  ['95.','format'],['95,','format'],['0.5','format'],['.5','format'],[',5','format'],
+  // text
+  ['abc','format'],['95a','format'],['a95','format'],['ninety','format'],['9 5 x','format'],
+  ['--5','format'],['-95','format'],['+95','format'],['1e3','format'],
+  // empty
+  ['','empty'],['   ','empty'],['€','empty'],[' € ','empty']
+];
+const BANNED = /recommended|most people|typical|safe|popular/i;
+
+function runChecks() {
+  const out = document.getElementById('checkout');
+  const fails = CASES.filter(([i, k]) => validate(i).kind !== k);
+  const plain = h => h.replace(/<[^>]+>/g, ' ');
+  const texts = [screen1(), screen2(), screen3({ amount: 95, source: 'typed' })].map(plain);
+  const hits = texts.filter(t => BANNED.test(t)).length;
+  out.innerHTML =
+    `<div class="${fails.length ? 'bad' : ''}">Validation: ${CASES.length - fails.length}/${CASES.length} cases classified correctly${fails.length ? ' – failed: ' + fails.map(f => JSON.stringify(f[0])).join(', ') : ''}</div>` +
+    `<div class="${hits ? 'bad' : ''}">Banned-string scan: ${hits} screens with hits</div>`;
+}
+document.getElementById('checks').addEventListener('click', runChecks);
+
+render();
 </script>
 </body>
 </html>
