@@ -15,14 +15,14 @@
 
 ## Channels
 1. **Owned: Consumer Service Portal inside the instalment plan**
-2. **Owned: Letters we send out to users**
+2. **Owned: Emails with reminders to pay and change their instalment rate**
 3. **Owned: Telephone when someone is calling**
 
 ## Enablement & Assets
 Call agent training, letter changes
 
 ## Ownership, Budget & Timeline
-- **Ownership & budget:** PM and team owns that project, letter changes cost extra
+- **Ownership & budget:** PM  of the portal, PM of the communication teams to add the emails - email changes and sending them out cost extra, Data analysts to evaluate the data
 - **Timeline:** Phase 1 change the portal and train the agents, Phase 2 change the letters, Phase 3 evaluate the data and make decisions
 
 ## Success Metrics
