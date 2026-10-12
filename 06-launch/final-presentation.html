@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free input of payable amount in instalment plan creation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Antarctican+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07162C; --fg:#ffffff; --muted:#ffffff;
+  --orange:#fb923c; --cyan:#22d3ee; --teal:#34d399; --blue:#60a5fa; --violet:#a78bfa; --pink:#f472b6;
+  --eyebrow:#fdba74;
+  --line:rgba(251,146,60,.25);
+  --head:"Saans","Inter","Helvetica Neue",Arial,system-ui,sans-serif;
+  --body:"Saans","Inter","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"Antarctican Mono","JetBrains Mono","SFMono-Regular",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:var(--bg)}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:400;line-height:1.45;font-size:clamp(13px,1.05vw,17px);-webkit-font-smoothing:antialiased}
+section{min-height:100vh;scroll-snap-align:start;padding:clamp(28px,5vh,56px) clamp(24px,6vw,96px) clamp(28px,5vh,56px) clamp(24px,5vw,80px);display:flex;flex-direction:column;justify-content:center;position:relative;border-bottom:1px solid rgba(255,255,255,.06)}
+section>.wrap{width:100%;max-width:1320px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+h1,h2,h3{font-family:var(--head);color:var(--fg)}
+h1{font-weight:900;font-size:clamp(34px,5.4vw,84px);line-height:1.02;letter-spacing:-.02em}
+h2{font-weight:800;font-size:clamp(24px,2.9vw,46px);line-height:1.1;letter-spacing:-.015em;margin-bottom:clamp(12px,2vh,22px)}
+h3{font-weight:700;font-size:clamp(14px,1.25vw,19px);margin-bottom:8px}
+.eyebrow{font-family:var(--mono);font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--eyebrow);font-size:clamp(10px,.8vw,13px);margin-bottom:10px;display:block}
+.mono{font-family:var(--mono)}
+.card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:clamp(14px,1.6vw,24px)}
+.hero{background:linear-gradient(145deg,rgba(251,146,60,.16),rgba(34,211,238,.06) 60%,rgba(255,255,255,.02));border-radius:16px;box-shadow:0 18px 48px rgba(0,0,0,.45)}
+.tile{box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.label{font-family:var(--mono);font-size:clamp(10px,.78vw,12px);text-transform:uppercase;letter-spacing:.12em;color:var(--eyebrow);display:block;margin-bottom:6px}
+.grid{display:grid;gap:clamp(10px,1.4vw,20px)}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-family:var(--mono);font-size:clamp(10px,.82vw,13px);background:rgba(251,146,60,.08)}
+.btn{display:inline-block;text-decoration:none;font-weight:700;background:var(--orange);color:var(--bg);padding:12px 22px;border-radius:12px;box-shadow:0 10px 28px rgba(251,146,60,.35)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--orange);box-shadow:none}
+.btn:hover{filter:brightness(1.08)}
+.callout{border-left:4px solid var(--orange);background:rgba(251,146,60,.1);border-radius:0 14px 14px 0;padding:clamp(14px,1.6vw,22px)}
+.callout.bad{border-left-color:var(--pink);background:rgba(244,114,182,.1)}
+.quote{font-weight:600}
+.small{font-size:.92em}
+ul{padding-left:1.1em}li{margin:3px 0}
+.dot-c{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px}
+/* progress + nav */
+#bar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--orange),var(--pink));z-index:50}
+#dots{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:50}
+#dots a{width:10px;height:10px;border-radius:50%;border:1px solid var(--orange);display:block;background:transparent;transition:background .2s,transform .2s}
+#dots a.on{background:var(--orange);transform:scale(1.35)}
+/* cover */
+.cover .wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(20px,4vw,64px);align-items:center}
+.cover .pitch{font-size:clamp(16px,1.7vw,26px);font-weight:600;margin-top:18px;max-width:30ch}
+.cover .meta{display:flex;flex-direction:column;gap:14px}
+.cover .meta div{word-break:break-all}
+/* slide 6 journey */
+.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:clamp(10px,1.6vh,18px)}
+.step{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.03);position:relative}
+.step b{font-family:var(--mono);color:var(--cyan);font-weight:500;display:block;margin-bottom:4px}
+.step.misery{border:2px solid var(--pink);background:linear-gradient(160deg,rgba(244,114,182,.22),rgba(244,114,182,.05));box-shadow:0 14px 36px rgba(244,114,182,.25)}
+.step.misery b{color:var(--pink)}
+.tag{position:absolute;top:-11px;right:12px;background:var(--pink);color:var(--bg);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+/* roadmap */
+.col h3{display:flex;align-items:center}
+.col.now{background:linear-gradient(150deg,rgba(251,146,60,.18),rgba(255,255,255,.02))}
+.cut{border:1px dashed rgba(255,255,255,.35);border-radius:14px;padding:10px 14px}
+/* experiment */
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.kv dt{font-family:var(--mono);color:var(--eyebrow);font-size:.82em;text-transform:uppercase;letter-spacing:.08em}
+.kv dd{margin:0}
+.rule{border-radius:12px;padding:10px 14px;border:1px solid}
+.rule.ship{border-color:var(--teal);background:rgba(52,211,153,.1)}
+.rule.iter{border-color:var(--blue);background:rgba(96,165,250,.1)}
+.rule.kill{border-color:var(--pink);background:rgba(244,114,182,.1)}
+.rule b{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em}
+.ship b{color:var(--teal)}.iter b{color:var(--blue)}.kill b{color:var(--pink)}
+.metric{text-align:left}
+.metric .big{font-family:var(--mono);font-weight:500;font-size:clamp(20px,2.4vw,38px);color:var(--cyan);line-height:1.1}
+/* thanks */
+.thanks{text-align:center;align-items:center}
+.thanks h2{font-size:clamp(34px,5vw,76px);font-weight:900}
+.submit{display:inline-block;margin-top:22px;border:2px solid var(--orange);border-radius:999px;padding:14px 28px;background:rgba(251,146,60,.14);font-weight:800;box-shadow:0 14px 36px rgba(251,146,60,.28)}
+@media (max-width:900px){
+  html{scroll-snap-type:y proximity}
+  .g2,.g3,.g4,.cover .wrap,.journey{grid-template-columns:1fr}
+  #dots{right:8px;gap:9px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="bar" aria-hidden="true"></div>
+<nav id="dots" aria-label="Slide navigation"></nav>
+
+<!-- 1 COVER -->
+<section id="cover" class="cover" data-title="Cover">
+<div class="wrap">
+  <div>
+    <span class="eyebrow">Product Management · Final Project</span>
+    <h1>Free input of payable amount in instalment plan creation</h1>
+    <p class="pitch">Increased amount of successfully paid of instalment plans</p>
+  </div>
+  <div class="card hero tile meta">
+    <div><span class="label">Name / cohort</span>Team 3 · Cohort 1 · October 2026</div>
+    <div class="mono small"><span class="label">Repo</span><a href="https://github.com/MichelleBob/pm-final-project" target="_blank" rel="noopener">https://github.com/MichelleBob/pm-final-project</a></div>
+    <div><span class="label">Prototype</span><a class="btn" href="http://htmlpreview.github.io/?https://github.com/MichelleBob/pm-final-project/blob/main/04-roadmap/prototype_free_amount_input.html" target="_blank" rel="noopener">View prototype</a></div>
+  </div>
+</div>
+</section>
+
+<!-- 2 STRATEGY -->
+<section id="strategy" data-title="Strategy">
+<div class="wrap">
+  <span class="eyebrow">Slide 5 · Strategy</span>
+  <h2>Where the journey loses money and agent capacity</h2>
+  <div class="grid g2" style="margin-bottom:clamp(10px,1.4vw,20px)">
+    <div class="card"><span class="label">Problem hook</span><p>Today's journey loses money and agent capacity at two points: before an agreement is reached, and after it. Left unchanged, costs rise with volume, portfolio value erodes, and the headline metric (SSR) can mask the problem.</p></div>
+    <div class="card hero tile"><span class="label">Value proposition</span><p>Create a transparent, guided repayment journey that helps consumers choose sustainable instalment plans the first time, reducing unnecessary agent interactions while improving long-term recovery performance beyond SSR.</p></div>
+  </div>
+  <div class="callout">
+    <span class="label">Data-backed hypothesis</span>
+    <p class="small">Based on P3's statement <span class="quote">"Whatever I put, I feel like I'm signing up to it forever"</span> (qual), and a <b style="color:var(--cyan)">26.8% drop-off</b> at the payment slider alongside a <b style="color:var(--cyan)">19% missed-payment rate</b> within 60 days (quant), I believe that letting debtors freely choose their instalment amount, giving them a clear explanation of what happens if an instalment is missed before they confirm, and the option to adjust their instalments after the agreement is set up, for debtors with variable income who want a quick answer on whether they can pay in instalments, will result in more users completing the slider step instead of dropping off or calling, as measured by a positive change in the slider-step completion rate (baseline: <b style="color:var(--cyan)">73.2%</b>). I will protect the 60-day missed-payment rate of new agreements, which must not exceed the 19% baseline, and will make a go/no-go decision after Stage 2 of the read-out: ~850 new agreements per arm plus 60 days after the last one was created.</p>
+  </div>
+</div>
+</section>
+
+<!-- 3 RESEARCH -->
+<section id="research" data-title="Research">
+<div class="wrap">
+  <span class="eyebrow">Slide 6 · Research</span>
+  <h2>Competitive analysis &amp; journey map</h2>
+  <div class="grid g2">
+    <div class="card">
+      <dl class="kv small">
+        <dt>Role</dt><dd>A debtor with variable income and multiple claims who is looking for a quick answer.</dd>
+        <dt>Goal</dt><dd>Find out whether and how they can pay in installments without committing long-term to something they can't sustain.</dd>
+        <dt>Friction</dt><dd>The slider shows a preset amount, which they read as the recommended norm. At the same time, there's no way to express "best month vs. worst month," and it's unclear what happens if they miss a payment (fear of full acceleration). Result: they either abandon, call the contact centre, or silently commit to an amount that's too high.</dd>
+        <dt>Workaround</dt><dd>The user needs to call the Contact Center to get answers.</dd>
+      </dl>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vw,20px)">
+      <div class="card hero tile"><span class="label">The evidence</span><p class="quote">P3: "They ask me what I can afford per month. My pay changes every month. Do I put my best month? My worst month? Whatever I put, I feel like I'm signing up to it forever."</p></div>
+      <div><a class="btn ghost" href="http://htmlpreview.github.io/?https://github.com/MichelleBob/pm-final-project/blob/main/02-discovery/journey-map.html" target="_blank" rel="noopener">Open journey map</a></div>
+    </div>
+  </div>
+  <div class="journey small" aria-label="Journey map">
+    <div class="step"><b>Step 1</b>Arrive with one question ("can I pay in pieces?") and scan dense case information for the answer.</div>
+    <div class="step misery"><span class="tag">Moment of misery</span><b>Step 2</b>Hit the slider and read the preset value as the recommended or "normal" amount, because there's no variable-income input to override it with.</div>
+    <div class="step"><b>Step 3</b>Hit the income request without knowing why it's needed, who sees it, or whether it affects credit.</div>
+    <div class="step"><b>Step 4</b>Resolve the uncertainty: call the contact centre for reassurance after a missed payment · under-report income deliberately · accept the default and silently commit too high · abandon, sometimes without starting.</div>
+  </div>
+</div>
+</section>
+
+<!-- 4 BLUEPRINT -->
+<section id="blueprint" data-title="Blueprint">
+<div class="wrap">
+  <span class="eyebrow">Slide 7 · Blueprint</span>
+  <h2>Roadmap, PRD &amp; prototype</h2>
+  <div class="grid g3">
+    <div class="card col now hero tile">
+      <h3><span class="dot-c" style="background:var(--orange)"></span>Now · this sprint</h3>
+      <ul class="small">
+        <li>Free amount input alongside the slider</li>
+        <li>"What if I miss an instalment?" before confirmation</li>
+        <li>Live preview of term and total</li>
+      </ul>
+    </div>
+    <div class="card col">
+      <h3><span class="dot-c" style="background:var(--cyan)"></span>Next</h3>
+      <p class="small" style="opacity:.75">No items committed yet. Decided after the Stage 2 read-out.</p>
+    </div>
+    <div class="card col">
+      <h3><span class="dot-c" style="background:var(--violet)"></span>Later</h3>
+      <ul class="small"><li>One amount covers all open claims, with one stated rule: a feature for when multi-claim instalments become possible</li></ul>
+    </div>
+  </div>
+  <div class="cut small" style="margin:clamp(8px,1.2vw,14px) 0"><span class="label">Cut · the "no" protecting scope</span>"Plan check" for conspicuous amounts</div>
+  <div class="grid g2">
+    <div class="card">
+      <span class="label">PRD highlights · the Now feature</span>
+      <p class="small"><b>Free amount input alongside the slider:</b> typing a number lets a variable-income debtor enter their own figure instead of dragging from the 150 anchor.</p>
+      <h3 style="margin-top:10px">Must-haves</h3>
+      <ul class="small"><li>Numeric input synced with the slider</li><li>Field is never prefilled with the 150 default</li><li>Visible bounds plus inline validation</li><li>Same validation on the server</li></ul>
+      <p class="small" style="margin-top:8px">The PRD makes error messages and accessibility explicit, which a vague brief would have missed.</p>
+    </div>
+    <div class="card hero tile" style="display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+      <div>
+        <span class="label">Primary success metric</span>
+        <p class="small">Slider-step completion rate with an actively chosen amount. The drop-off rate from 26.8% should be decreased.</p>
+        <span class="label" style="margin-top:10px">Prototype gap found</span>
+        <p class="small">The prototype added things that were not mentioned in the PRD.</p>
+      </div>
+      <div><a class="btn" href="http://htmlpreview.github.io/?https://github.com/MichelleBob/pm-final-project/blob/main/04-roadmap/prototype_free_amount_input.html" target="_blank" rel="noopener">View prototype</a>
+      <a class="btn ghost" style="margin-left:8px" href="http://htmlpreview.github.io/?https://github.com/MichelleBob/pm-final-project/blob/main/04-roadmap/riverty_back_in_flow_roadmap_2.html" target="_blank" rel="noopener">Roadmap</a></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 5 VALIDATION -->
+<section id="validation" data-title="Validation">
+<div class="wrap">
+  <span class="eyebrow">Slide 8 · Validation</span>
+  <h2>A/B experiment plan</h2>
+  <div class="card hero tile" style="margin-bottom:clamp(8px,1.2vw,16px)">
+    <span class="label">Hypothesis</span>
+    <p class="small">Free amount input alongside the slider, for a debtor with variable income and multiple claims, will result in a <b style="color:var(--cyan)">+5 pts</b> change in slider-step completion rate with an actively chosen amount, within 14 days, while the 60-day missed-payment rate stays protected.</p>
+  </div>
+  <div class="grid g2" style="margin-bottom:clamp(8px,1.2vw,16px)">
+    <div class="card small">
+      <span class="label">Control (A)</span>
+      <p>The current slider with a preset. No one can tell what's affordable, and nobody explains why they're asking. Users call the contact centre, under-report income, accept an amount that's too high, or abandon.</p>
+      <span class="label" style="margin-top:10px">Held constant</span>
+      <p>The existence of a slider.</p>
+    </div>
+    <div class="card small">
+      <span class="label">Variant (B) · 3 screens</span>
+      <ul>
+        <li><b>Case overview:</b> greeting, two claim rows, combined total (€1,240), one primary button "Pay in instalments".</li>
+        <li><b>Choose your amount:</b> "How much can you pay per month?", empty € field, slider with muted thumb, visible bounds (€52 to €1,240), inline error area, disabled "Set up plan".</li>
+        <li><b>Confirmation:</b> "Your plan is set up", amount, number of instalments, "Need to change something? Contact us."</li>
+      </ul>
+    </div>
+  </div>
+  <div class="grid g4" style="margin-bottom:clamp(8px,1.2vw,16px)">
+    <div class="card metric"><span class="label">Primary metric · baseline</span><div class="big">73.2%</div><p class="small">Slider-step completion with an actively chosen amount (drop-off 26.8%)</p></div>
+    <div class="card metric"><span class="label">MDE</span><div class="big">+5 pts</div><p class="small">p &lt; 0.05 · 14 days</p></div>
+    <div class="card metric"><span class="label">Guardrail · baseline</span><div class="big">19%</div><p class="small">New agreements missing a payment within 60 days. Must not exceed baseline.</p></div>
+    <div class="card metric"><span class="label">Sample · split</span><div class="big">1000</div><p class="small">per arm · traffic 10/10/80</p></div>
+  </div>
+  <div class="grid g3 small">
+    <div class="rule ship"><b>Ship</b><br>Primary metric improves by ≥ +5 pts at p &lt; 0.05 and the guardrail does not reach the boundary (payment rate must not drop more than 1 pt) after 14 days.</div>
+    <div class="rule iter"><b>Iterate</b><br>Direction is positive but lift is below the MDE.</div>
+    <div class="rule kill"><b>Kill</b><br>The primary metric shows no improvement or moves negatively. The read date is fixed at the end of 14 days; no results reviewed before.</div>
+  </div>
+</div>
+</section>
+
+<!-- 6 LAUNCH -->
+<section id="launch" data-title="Launch">
+<div class="wrap">
+  <span class="eyebrow">Slide 9 · Launch</span>
+  <h2>GTM strategy &amp; success metrics</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="grid g3" style="margin-bottom:12px">
+        <div><span class="label">Goal</span><b>Conversion</b></div>
+        <div><span class="label">Tier</span><b>L, Multi-channel</b></div>
+        <div><span class="label">Audience</span><b class="small">Debtors with variable income and multiple claims</b></div>
+      </div>
+      <p class="small">We want to increase the amount of successful payments inside the instalment process. The impact is high, because a failed instalment plan means in most cases that no other one can be made afterwards.</p>
+      <span class="label" style="margin-top:12px">Channels</span>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span class="pill">Owned: Consumer Service Portal inside the instalment plan</span>
+        <span class="pill">Owned: Emails with reminders to pay and change their instalment rate</span>
+        <span class="pill">Owned: Telephone when someone is calling</span>
+      </div>
+      <span class="label" style="margin-top:12px">Enablement &amp; timeline</span>
+      <p class="small">Call agent training, letter changes. <b>Phase 1:</b> change the portal and train the agents · <b>Phase 2:</b> change the letters · <b>Phase 3:</b> evaluate the data and make decisions.</p>
+      <p class="small" style="margin-top:6px"><b>Ownership:</b> PM of the portal, PM of the communication teams, data analysts.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vw,18px)">
+      <div class="card hero tile">
+        <span class="label">Success-metrics dashboard</span>
+        <div class="grid" style="gap:10px">
+          <div class="step"><b style="color:var(--teal)">↑ Metric 1</b>Successful instalment plan creation</div>
+          <div class="step"><b style="color:var(--teal)">↑ Metric 2</b>Successful payments of instalment rates</div>
+          <div class="step"><b style="color:var(--teal)">↑ Metric 3</b>Paid off claims</div>
+        </div>
+        <p class="small mono" style="margin-top:8px;opacity:.7">Targets set at launch</p>
+      </div>
+      <div class="callout bad"><span class="label" style="color:var(--pink)">Bad signal to watch for</span><p class="small">Increased number of failed instalment plan creation and paid instalment rates.</p><p class="small" style="margin-top:6px"><b>Likely decision:</b> change the form or leave it like it was planned.</p></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 7 STORY -->
+<section id="story" data-title="Story">
+<div class="wrap">
+  <span class="eyebrow">Slide 10 · Story</span>
+  <h2>Friction points &amp; the aha moment</h2>
+  <div class="grid g2">
+    <div class="card"><span class="label">Friction points</span><p>As being not a product manager, for me there was a lot to learn about product cycle and doing it with ai. But I also had some struggle with the tasks and the technical words.</p></div>
+    <div class="card hero tile"><span class="label">Aha moment · key takeaways</span><p>My biggest kearning was how much I can use ai for that kind of work and I will definitely use it in the future.</p></div>
+  </div>
+  <div class="card" style="margin-top:clamp(10px,1.4vw,20px)"><span class="label">What I would do next</span><p class="small">Run the A/B experiment through the Stage 2 read-out, then decide on Next-lane items from the results.</p></div>
+</div>
+</section>
+
+<!-- 8 THANK YOU -->
+<section id="thanks" class="thanks" data-title="Submit">
+<div class="wrap">
+  <span class="eyebrow">Thank you</span>
+  <h2>Thank you</h2>
+  <p class="mono"><a href="https://github.com/MichelleBob/pm-final-project" target="_blank" rel="noopener">https://github.com/MichelleBob/pm-final-project</a></p>
+  <p class="pill" style="margin-top:14px">Cohort 1 · October 2026</p><br>
+  <span class="submit">Submit to the learning platform</span>
+</div>
+</section>
+
+<script>
+(function(){
+  var secs=[].slice.call(document.querySelectorAll('section'));
+  var dots=document.getElementById('dots'), bar=document.getElementById('bar');
+  secs.forEach(function(s,i){
+    var a=document.createElement('a');a.href='#'+s.id;a.title=s.dataset.title;a.setAttribute('aria-label','Go to '+s.dataset.title);
+    a.addEventListener('click',function(e){e.preventDefault();go(i)});dots.appendChild(a);
+  });
+  var links=dots.children;
+  function cur(){var y=window.scrollY+window.innerHeight/2,c=0;secs.forEach(function(s,i){if(s.offsetTop<=y)c=i});return c}
+  function go(i){i=Math.max(0,Math.min(secs.length-1,i));secs[i].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+  function upd(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?window.scrollY/h*100:0)+'%';
+    var c=cur();for(var i=0;i<links.length;i++)links[i].classList.toggle('on',i===c);
+  }
+  window.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
+  document.addEventListener('keydown',function(e){
+    if(e.target.closest&&e.target.closest('a,button,input,textarea')&&e.key===' ')return;
+    var k=e.key;
+    if(k==='ArrowDown'||k===' '){e.preventDefault();go(cur()+(e.shiftKey&&k===' '?-1:1))}
+    else if(k==='ArrowUp'){e.preventDefault();go(cur()-1)}
+    else if(k==='Home'){e.preventDefault();go(0)}
+    else if(k==='End'){e.preventDefault();go(secs.length-1)}
+    else if(k==='Escape'){go(0)}
+  });
+})();
+</script>
+</body>
+</html>
