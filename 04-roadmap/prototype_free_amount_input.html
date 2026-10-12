@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototype – Free amount input alongside the slider</title>
+<style>
+  :root {
+    --bg: #eef3f1; --ink: #0d2523; --muted: #567069; --line: #d6e3de;
+    --teal: #0b6e63; --teal-dark: #08554c; --mint: #b8f0d6; --soft: #e8f1ee;
+    --err: #b0384a; --err-bg: #fbe5e8; --warn-bg: #fff3d4; --warn-ink: #66480a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; line-height: 1.45; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid #1d9a8a; outline-offset: 2px; }
+
+  .stage { max-width: 860px; margin: 0 auto; padding: 20px 16px 48px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; justify-content: center; }
+  .phone { width: 100%; max-width: 390px; background: #fff; border-radius: 28px; border: 1px solid var(--line); box-shadow: 0 18px 40px -18px rgba(13,37,35,.35); overflow: hidden; min-height: 680px; display: flex; flex-direction: column; }
+  .proto-tag { background: var(--warn-bg); color: var(--warn-ink); font-size: .76rem; text-align: center; padding: 5px 10px; }
+  .top { display: flex; align-items: center; gap: 9px; padding: 16px 22px 6px; font-weight: 700; }
+  .top svg { width: 26px; height: 26px; }
+  #app { flex: 1; display: flex; flex-direction: column; padding: 8px 22px 22px; }
+  h1 { font-size: 1.5rem; line-height: 1.2; margin: 14px 0 6px; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: .95rem; }
+
+  .claims { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+  .claim { display: flex; justify-content: space-between; padding: 13px 15px; border-bottom: 1px solid var(--line); font-size: .95rem; }
+  .claim .n { color: var(--muted); }
+  .claim.total { background: var(--soft); font-weight: 700; border-bottom: 0; }
+
+  .btn { width: 100%; border: 0; border-radius: 12px; padding: 15px; font-weight: 700; font-size: 1rem; background: var(--teal); color: #fff; margin-top: auto; }
+  .btn:hover:not(:disabled) { background: var(--teal-dark); }
+  .btn:disabled { background: #c5d4cf; color: #6f857f; cursor: not-allowed; }
+
+  label.fl { display: block; font-weight: 600; margin-bottom: 6px; }
+  .field { display: flex; align-items: center; border: 2px solid var(--line); border-radius: 12px; padding: 0 14px; background: #fff; }
+  .field:focus-within { border-color: var(--teal); }
+  .field.bad { border-color: var(--err); background: var(--err-bg); }
+  .field .eur { font-size: 1.4rem; color: var(--muted); margin-right: 6px; }
+  .field input { border: 0; outline: 0; background: transparent; width: 100%; font: inherit; font-size: 1.6rem; font-weight: 700; padding: 13px 0; color: var(--ink); min-width: 0; }
+  .field input::placeholder { color: #9bb0aa; font-weight: 400; font-size: 1.1rem; }
+  .bounds { font-size: .88rem; color: var(--muted); margin: 7px 2px 0; }
+  .err { min-height: 22px; margin: 6px 2px 0; color: var(--err); font-size: .9rem; font-weight: 600; }
+  .hint { background: var(--soft); border-radius: 10px; padding: 9px 12px; font-size: .9rem; margin: 10px 0 14px; }
+
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; margin: 4px 0 0; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: #cfe3dc; }
+  input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: #cfe3dc; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.35); margin-top: -11px; }
+  input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.35); }
+  input[type=range].muted::-webkit-slider-thumb { background: #b7c7c2; }
+  input[type=range].muted::-moz-range-thumb { background: #b7c7c2; }
+  .ends { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+
+  .ok-mark { width: 54px; height: 54px; border-radius: 50%; background: var(--mint); display: grid; place-items: center; margin-top: 18px; }
+  .ok-mark svg { width: 28px; height: 28px; }
+  .sum { border: 1px solid var(--line); border-radius: 14px; margin: 14px 0; }
+  .sum div { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--line); }
+  .sum div:last-child { border-bottom: 0; }
+  .sum .k { color: var(--muted); }
+  .contact { font-size: .92rem; color: var(--muted); margin: 0 0 12px; }
+
+  .debug { font-size: .76rem; background: #10201e; color: #b8f0d6; border-radius: 8px; padding: 7px 10px; margin-top: 12px; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+
+  aside { width: 100%; max-width: 390px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; font-size: .9rem; }
+  aside h2 { font-size: 1rem; margin: 0 0 4px; }
+  aside p { margin: 0 0 10px; color: var(--muted); }
+  .tries { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tries button, .tool { border: 1px solid var(--line); background: var(--soft); border-radius: 8px; padding: 4px 10px; font-size: .84rem; }
+  .tries button:hover, .tool:hover { background: var(--ink); color: #fff; }
+  #testout { margin-top: 10px; font-size: .84rem; }
+  #testout .pass { color: #0f7d57; font-weight: 700; }
+  #testout .fail { color: var(--err); font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone">
+    <div class="proto-tag">Prototype with placeholder data. No real claims, rates or limits.</div>
+    <div class="top">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="17" fill="#b8f0d6"/><path d="M5 19c3.2-5.4 6.4-5.4 9.6 0s6.4 5.4 9.6 0c1.6-2.7 3.2-4 4.8-4.4" fill="none" stroke="#0d2523" stroke-width="2.8" stroke-linecap="round"/></svg>
+      Riverty
+    </div>
+    <div id="app"></div>
+  </div>
+
+  <aside>
+    <h2>Tester tools</h2>
+    <p>Outside the prototype. Click a value to type it into the field on screen 2.</p>
+    <div class="tries" id="tries"></div>
+    <button class="tool" id="restart">Restart prototype</button>
+    <button class="tool" id="runtests">Run self-test</button>
+    <div id="testout" aria-live="polite"></div>
+  </aside>
+</div>
+
+<script>
+  // ---------- Placeholder config (not Riverty data) ----------
+  const TOTAL = 1240, MIN = 52, MAX = TOTAL, STEP = 5;   // MIN = ceil(1240 / 24 months)
+  const CLAIMS = [{ name: "Creditor A (placeholder)", amt: 740 }, { name: "Creditor B (placeholder)", amt: 500 }];
+  const SLIDER_TOP = MIN + STEP * Math.floor((MAX - MIN) / STEP);   // highest value the slider can reach
+  const fmt = n => "\u20AC" + Number(n).toLocaleString("en-US");
+
+  // ---------- Single state object (stand-in for useState; no persistence) ----------
+  const fresh = () => ({ screen: 1, raw: "", amount: null, source: null, sliderActive: false, msg: "", submitted: false });
+  let state = fresh();
+
+  // ---------- FR3/FR5/FR6: one validation function, used live and again on submit (FR7) ----------
+  // Allowed: digits only, with one optional leading or trailing euro sign and spaces around it.
+  function validate(raw) {
+    const s = String(raw).trim().replace(/^\u20AC\s*/, "").replace(/\s*\u20AC$/, "");
+    if (s === "") return { ok: false, code: "empty", error: "" };
+    if (/[^0-9]/.test(s)) return { ok: false, code: "format", error: "Please enter whole euros." };
+    const n = Number(s);
+    if (n < MIN) return { ok: false, code: "low", error: "The lowest amount that fits is " + fmt(MIN) + "." };
+    if (n > MAX) return { ok: false, code: "high", error: "The maximum is your total open balance of " + fmt(MAX) + "." };
+    return { ok: true, code: "ok", amount: n, error: "" };
+  }
+  function snap(a) {
+    const v = MIN + Math.round((a - MIN) / STEP) * STEP;
+    return Math.max(MIN, Math.min(v, SLIDER_TOP));
+  }
+
+  // ---------- Screens ----------
+  function screenHTML(n, s) {
+    s = s || state;
+    if (n === 1) {
+      return `
+        <h1>Hi Mara</h1>
+        <p class="sub">You have 2 open claims.</p>
+        <div class="claims">
+          ${CLAIMS.map(c => `<div class="claim"><span class="n">${c.name}</span><span>${fmt(c.amt)}</span></div>`).join("")}
+          <div class="claim total"><span>Total open</span><span>${fmt(TOTAL)}</span></div>
+        </div>
+        <button class="btn" id="start">Pay in instalments</button>`;
+    }
+    if (n === 2) {
+      return `
+        <h1>How much can you pay per month?</h1>
+        <p class="sub">Total open: ${fmt(TOTAL)}</p>
+        <label class="fl" for="amt">Monthly amount</label>
+        <div class="field" id="field">
+          <span class="eur" aria-hidden="true">\u20AC</span>
+          <input id="amt" type="text" inputmode="numeric" autocomplete="off" placeholder="Enter amount" aria-describedby="bounds err" aria-invalid="false" maxlength="12">
+        </div>
+        <div class="bounds" id="bounds">Allowed: ${fmt(MIN)} to ${fmt(MAX)}</div>
+        <div class="err" id="err" role="alert"></div>
+        <div class="hint">Base it on a weaker month, not your best one.</div>
+        <input id="slider" type="range" class="muted" min="${MIN}" max="${MAX}" step="${STEP}" value="${MIN}" aria-label="Monthly amount slider">
+        <div class="ends"><span>${fmt(MIN)}</span><span>${fmt(MAX)}</span></div>
+        <button class="btn" id="submit" disabled>Set up plan</button>
+        <div class="debug" id="dbg2"></div>`;
+    }
+    const a = s.amount || 95, cnt = Math.ceil(TOTAL / a), last = TOTAL - a * (cnt - 1);
+    return `
+      <div class="ok-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0b6e63" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h1>Your plan is set up</h1>
+      <div class="sum">
+        <div><span class="k">Monthly amount</span><b>${fmt(a)}</b></div>
+        <div><span class="k">Instalments</span><b>${cnt}</b></div>
+        ${cnt > 1 && last !== a ? `<div><span class="k">Last instalment</span><b>${fmt(last)}</b></div>` : ""}
+        <div><span class="k">Total</span><b>${fmt(TOTAL)}</b></div>
+      </div>
+      <p class="contact">Need to change something? Contact us.</p>
+      <div class="debug" id="dbg3"></div>`;
+  }
+
+  function render() {
+    document.getElementById("app").innerHTML = screenHTML(state.screen);
+    if (state.screen === 1) document.getElementById("start").onclick = () => { state.screen = 2; render(); document.getElementById("amt").focus(); };
+    if (state.screen === 2) bindScreen2();
+    updateDebug();
+  }
+
+  // ---------- Screen 2 behaviour ----------
+  function bindScreen2() {
+    const amt = document.getElementById("amt"), slider = document.getElementById("slider");
+
+    amt.addEventListener("input", () => {
+      const v = amt.value;
+      state.msg = "";
+      let cleaned = v.replace(/[^0-9\u20AC\s.,+\-]/g, "");                  // letters and symbols are never stored
+      if (cleaned !== v) state.msg = "Please enter whole euros.";
+      if (cleaned.replace(/\D/g, "").length > 7) {                          // cap at 7 digits, no overflow
+        cleaned = state.raw;
+        state.msg = "The maximum is your total open balance of " + fmt(MAX) + ".";
+      }
+      amt.value = cleaned;
+      state.raw = cleaned;
+      state.source = cleaned.trim() === "" ? null : "typed";
+      const r = validate(cleaned);
+      if (r.ok) {
+        state.amount = r.amount;
+        state.sliderActive = true;
+        slider.value = snap(r.amount);                                      // thumb snaps, field never changes (FR1)
+      } else {
+        state.amount = null;
+        if (cleaned.trim() === "") { state.sliderActive = false; slider.value = MIN; }
+      }
+      refresh();
+    });
+
+    slider.addEventListener("input", () => {
+      let n = Number(slider.value);
+      if (n === SLIDER_TOP) n = MAX;
+      state.raw = String(n); state.amount = n; state.source = "slider";
+      state.sliderActive = true; state.msg = "";
+      amt.value = String(n);                                                // FR2
+      refresh();
+    });
+
+    document.getElementById("submit").addEventListener("click", () => {
+      if (state.submitted) return;
+      const r = validate(state.raw);                                        // FR7: re-validate stored state
+      if (!r.ok || state.msg) { state.msg = r.error || state.msg; refresh(); return; }
+      state.submitted = true;
+      state.amount = r.amount;
+      document.getElementById("submit").disabled = true;
+      state.screen = 3; render();
+    });
+    refresh();
+  }
+
+  function refresh() {
+    if (state.screen !== 2) return;
+    const r = validate(state.raw), msg = state.msg || r.error;
+    document.getElementById("err").textContent = msg;
+    document.getElementById("field").classList.toggle("bad", !!msg);
+    document.getElementById("amt").setAttribute("aria-invalid", msg ? "true" : "false");
+    document.getElementById("submit").disabled = !(r.ok && !state.msg) || state.submitted;
+    document.getElementById("slider").classList.toggle("muted", !state.sliderActive);
+    updateDebug();
+  }
+
+  function updateDebug() {
+    const t = "amount_source: " + (state.source || "unset") + " | raw: \"" + state.raw + "\" | valid: " + (validate(state.raw).ok ? "yes" : "no");
+    ["dbg2", "dbg3"].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = t; });
+  }
+
+  // ---------- Tester tools ----------
+  const TRIES = ["95", "30", "1500", "95.5", "95,50", "abc", "\u20AC 1240", "1 000", "97"];
+  document.getElementById("tries").innerHTML = TRIES.map((t, i) => `<button data-i="${i}">${t}</button>`).join("");
+  document.getElementById("tries").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (state.screen !== 2) { state = fresh(); state.screen = 2; render(); }
+    const amt = document.getElementById("amt");
+    amt.value = TRIES[Number(b.dataset.i)];
+    amt.dispatchEvent(new Event("input"));
+  });
+  document.getElementById("restart").onclick = () => { state = fresh(); render(); };
+
+  const CASES = {
+    ok:     ["52","53","95","100","500","999","1000","1239","1240","\u20AC95","95 \u20AC","\u20AC 95","  95  "],
+    low:    ["1","10","30","51","0","00","007"],
+    high:   ["1241","1500","5000","9999999","1240000"],
+    format: ["95.5","95,50","95.","95,","1.240","1,240","\u20AC1.240","0.5",".5",",5","-95","+95","9e2","95a","abc","\u20ACabc","1/2","95\u20AC5","1 000"],
+    empty:  ["","   ","\u20AC","\u20AC "]
+  };
+  document.getElementById("runtests").onclick = () => {
+    let total = 0, passed = 0; const fails = [];
+    Object.entries(CASES).forEach(([exp, list]) => list.forEach(inp => {
+      total++; const got = validate(inp).code;
+      if (got === exp) passed++; else fails.push(JSON.stringify(inp) + " expected " + exp + ", got " + got);
+    }));
+    const text = [screenHTML(1), screenHTML(2), screenHTML(3, { amount: 95 })].join(" ").replace(/<[^>]+>/g, " ");
+    const banned = (text.match(/recommended|most people|typical|popular|\bsafe\b/gi) || []).length;
+    const placeholderDigits = /\d/.test(document.createRange().createContextualFragment(screenHTML(2)).querySelector("#amt").getAttribute("placeholder"));
+    const promise = /adjust[^.]*portal/i.test(text);
+    const line = (ok, label) => `<div><span class="${ok ? "pass" : "fail"}">${ok ? "PASS" : "FAIL"}</span> ${label}</div>`;
+    document.getElementById("testout").innerHTML =
+      line(passed === total, `Validation: ${passed}/${total} inputs classified correctly`) +
+      fails.map(f => `<div class="fail">${f}</div>`).join("") +
+      line(banned === 0, `Anchor/norm words in copy: ${banned}`) +
+      line(!placeholderDigits, "Placeholder contains no digit") +
+      line(!promise, "No promise of adjusting in the portal");
+  };
+
+  render();
+</script>
+</body>
+</html>
